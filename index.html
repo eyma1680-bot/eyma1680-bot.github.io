@@ -96,7 +96,7 @@
                     <input type="text" id="expName" placeholder="品項名稱" class="p-2 border-b border-sketch-ink text-base focus:outline-none">
                 </div>
                 <div class="flex items-center space-x-2 mb-4">
-                    <input type="number" id="expAmt" placeholder="日幣金額" class="flex-1 p-2 border-b border-sketch-ink text-base">
+                    <input type="number" id="expAmt" placeholder="日幣金額" class="flex-1 min-w-0 p-2 border-b border-sketch-ink text-base">
                     <label class="cursor-pointer bg-sketch-bg p-2 rounded border border-sketch-ink text-base flex-shrink-0">
                         <i class="fas fa-camera"></i>
                         <input type="file" accept="image/*" class="hidden" onchange="compressImg(this, 'expense_temp')">
@@ -124,7 +124,7 @@
                 <h3 class="font-bold text-sketch-green mb-4 border-b-2 border-dashed pb-2">行前準備 CheckList</h3>
                 <div id="checkListItems" class="space-y-3 mb-6"></div>
                 <div class="flex space-x-2">
-                    <input type="text" id="newCheckItem" placeholder="新增物品..." class="flex-1 p-2 border-b border-sketch-ink bg-transparent text-base focus:outline-none">
+                    <input type="text" id="newCheckItem" placeholder="新增物品..." class="flex-1 min-w-0 p-2 border-b border-sketch-ink bg-transparent text-base focus:outline-none">
                     <button onclick="addCheckItem()" class="bg-sketch-green text-white px-4 py-2 rounded-lg font-bold flex-shrink-0">+</button>
                 </div>
             </div>
@@ -148,6 +148,10 @@
                     </div>
                     <i class="fas fa-cloud-sun text-blue-400 text-2xl"></i>
                 </a>
+
+
+
+
 		
 
                 <div class="sketch-card p-5 bg-red-50/50 border-red-200">
