@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>四國之詩｜2026 員工旅遊手冊</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sketch: {
+                            bg: '#FAF7F2', ink: '#4A443F', green: '#8EA66E', earth: '#BC9F80', accent: '#E89D8E', water: '#A5C4D4', critical: '#A67C52'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Zen Maru Gothic', sans-serif; background-color: #FAF7F2; color: #4A443F; -webkit-tap-highlight-color: transparent; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .sketch-card { border: 2px solid #4A443F; box-shadow: 4px 4px 0px #4A443F; background: white; border-radius: 12px; }
+        .nav-item.active { color: #8EA66E; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        input[type="checkbox"] { appearance: none; width: 18px; height: 18px; border: 2px solid #4A443F; border-radius: 4px; cursor: pointer; position: relative; }
+        input[type="checkbox"]:checked { background-color: #8EA66E; }
+        input[type="checkbox"]:checked::after { content: "✓"; position: absolute; color: white; font-size: 14px; left: 2px; top: -3px; }
+    </style>
+</head>
+<body class="pb-24">
+
+    <header class="p-5 bg-white border-b-2 border-sketch-ink sticky top-0 z-50 flex justify-between items-center shadow-sm">
+        <div>
+            <h1 class="text-xl font-bold italic">四國之詩 <span class="text-sketch-green">2026</span></h1>
+            <p class="text-[10px] opacity-50 uppercase tracking-widest">Digital Travel Handbook</p>
+        </div>
+        <div id="dayIndicator" class="bg-sketch-accent text-white px-3 py-1 rounded-full text-xs font-bold">Day 1</div>
+    </header>
+
+    <main class="max-w-md mx-auto p-4">
+        
+        <!-- 1. 行程 (PLAN) -->
+        <section id="plan" class="tab-content active">
+            <div class="flex space-x-2 overflow-x-auto no-scrollbar mb-6 py-2">
+                <script>
+                    const days = ["5/8 (五)", "5/9 (六)", "5/10 (日)", "5/11 (一)", "5/12 (二)"];
+                    days.forEach((d, i) => {
+                        document.write(`<button onclick="switchDay(${i+1})" id="dayBtn${i+1}" class="day-btn shrink-0 px-4 py-2 rounded-full border-2 border-sketch-ink font-bold transition-all ${i===0?'bg-sketch-green text-white shadow-md':'bg-white'} text-xs">D${i+1} ${d}</button>`);
+                    });
+                </script>
+            </div>
+            <div id="planItems" class="space-y-4"></div>
+        </section>
+
+        <!-- 2. 購物 (SOUVENIR) -->
+        <section id="souvenir" class="tab-content">
+            <h2 class="text-xl font-bold mb-6 italic border-l-4 border-sketch-accent pl-3">Shopping List</h2>
+            <div class="flex space-x-2 mb-6">
+                <input type="text" id="newShopItem" placeholder="新增伴手禮..." class="flex-1 p-2 border-b-2 border-sketch-ink bg-transparent text-sm focus:outline-none">
+                <button onclick="addShopItem()" class="bg-sketch-earth text-white px-4 py-2 rounded-lg font-bold shadow-sm">+</button>
+            </div>
+            <div class="space-y-3" id="souvenirList"></div>
+        </section>
+
+        <!-- 3. 記帳 (WALLET) -->
+        <section id="wallet" class="tab-content">
+            <div class="sketch-card p-4 mb-6 bg-sketch-water/10 flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] font-bold opacity-60">匯率換算 (JPY / 5 = TWD)</p>
+                    <div class="flex items-center space-x-2 mt-1">
+                        <input type="number" id="jpyCalc" oninput="calcTwd(this.value)" placeholder="輸入日幣" class="w-24 bg-transparent border-b-2 border-sketch-ink text-lg font-bold focus:outline-none">
+                        <span class="font-bold text-sketch-green">≈ NT$ <span id="twdCalcOutput">0</span></span>
+                    </div>
+                </div>
+                <i class="fas fa-calculator opacity-20 text-2xl"></i>
+            </div>
+
+            <div class="sketch-card p-4 mb-6">
+                <h3 class="font-bold mb-3 text-xs">記錄支出</h3>
+                <div class="grid grid-cols-2 gap-2 mb-2">
+                    <select id="expDate" class="p-2 border border-sketch-ink rounded text-xs bg-white">
+                        <option value="D0 事前">D0 事前</option><option value="D1 5/8">D1 5/8</option>
+                        <option value="D2 5/9">D2 5/9</option><option value="D3 5/10">D3 5/10</option>
+                        <option value="D4 5/11">D4 5/11</option><option value="D5 5/12">D5 5/12</option>
+                    </select>
+                    <input type="text" id="expName" placeholder="品項名稱" class="p-2 border-b border-sketch-ink text-xs focus:outline-none">
+                </div>
+                <div class="flex items-center space-x-2 mb-4">
+                    <input type="number" id="expAmt" placeholder="日幣金額" class="flex-1 p-2 border-b border-sketch-ink text-xs">
+                    <label class="cursor-pointer bg-sketch-bg p-2 rounded border border-sketch-ink text-xs">
+                        <i class="fas fa-camera"></i>
+                        <input type="file" accept="image/*" class="hidden" onchange="compressImg(this, 'expense_temp')">
+                    </label>
+                </div>
+                <div id="expensePreview" class="hidden mb-4"><img src="" class="w-full h-32 object-cover rounded border"></div>
+                <button onclick="saveExpense()" class="w-full bg-sketch-ink text-white py-3 rounded-lg font-bold shadow-md active:scale-95 text-sm">儲存帳目</button>
+            </div>
+
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-xs italic">支出明細</h3>
+                <select id="filterDate" onchange="renderExpenses()" class="text-[10px] border-none bg-transparent font-bold text-sketch-green">
+                    <option value="ALL">顯示全部</option>
+                    <option value="D0 事前">D0 事前</option><option value="D1 5/8">D1 5/8</option>
+                    <option value="D2 5/9">D2 5/9</option><option value="D3 5/10">D3 5/10</option>
+                    <option value="D4 5/11">D4 5/11</option><option value="D5 5/12">D5 5/12</option>
+                </select>
+            </div>
+            <div id="expenseList" class="space-y-2"></div>
+        </section>
+
+        <!-- 4. 清單 (LISTS) -->
+        <section id="lists" class="tab-content">
+            <div class="sketch-card p-5 mb-6">
+                <h3 class="font-bold text-sketch-green mb-4 border-b-2 border-dashed pb-2">行前準備 CheckList</h3>
+                <div id="checkListItems" class="space-y-3 mb-6"></div>
+                <div class="flex space-x-2">
+                    <input type="text" id="newCheckItem" placeholder="新增物品..." class="flex-1 p-2 border-b border-sketch-ink bg-transparent text-sm focus:outline-none">
+                    <button onclick="addCheckItem()" class="bg-sketch-green text-white px-4 py-2 rounded-lg font-bold">+</button>
+                </div>
+            </div>
+
+            <div class="sketch-card p-5">
+                <h3 class="font-bold mb-3 text-xs italic">個人備忘錄 Memo</h3>
+                <textarea id="memoInput" oninput="updateMemo()" class="w-full h-32 bg-sketch-bg border-none p-3 rounded-lg text-sm focus:ring-0 mb-4" placeholder="輸入文字，網址會自動轉連結..."></textarea>
+                <div id="memoLinks" class="flex flex-wrap gap-2"></div>
+            </div>
+        </section>
+
+        <!-- 5. 資訊 (INFO) -->
+        <section id="info" class="tab-content">
+            <div class="space-y-4">   
+ 
+               		 <!-- 天氣 -->
+                	<a href="https://www.jma.go.jp/bosai/#pattern=forecast&area_type=offices&area_code=370000" target="_blank" class="block sketch-card p-5 flex justify-between items-		center bg-blue-50/50">
+                 	 	  <div>
+                    	    <h4 class="font-bold text-blue-800">日本氣象廳 (香川預報)</h4>
+                 	  <p class="text-[10px] opacity-60">點擊查看一週氣溫與降雨</p>
+                    </div>
+                    <i class="fas fa-cloud-sun text-blue-400 text-2xl"></i>
+                </a>
+
+
+	<!-- 資料備份與同步 -->
+                <div class="sketch-card p-5 bg-sketch-water/20">
+                    <h4 class="font-bold text-sm mb-3"><i class="fas fa-sync-alt mr-2"></i>跨裝置同步 (電腦 ↔ 手機)</h4>
+                    <p class="text-[10px] mb-3 opacity-70">在電腦編輯完圖片後，點擊「匯出代碼」並傳至手機，再於手機「匯入代碼」即可同步。</p>
+                    <div class="flex space-x-2">
+                        <button onclick="exportData()" class="flex-1 bg-sketch-ink text-white py-2 rounded text-[10px] font-bold">匯出代碼</button>
+                        <button onclick="importData()" class="flex-1 border-2 border-sketch-ink py-2 rounded text-[10px] font-bold">匯入代碼</button>
+                    </div>
+                </div>
+		
+		
+
+                <div class="sketch-card p-5 bg-red-50/50 border-red-200">
+                    <h4 class="font-bold text-red-800 mb-3 text-sm"><i class="fas fa-phone-alt mr-2"></i>緊急聯絡資訊</h4>
+                    <div class="text-xs space-y-2">
+                        <p class="font-bold">台北駐大阪辦事處：</p>
+                        <p>● 緊急電話：<span class="text-red-600 font-bold">090-8794-4568</span></p>
+                        <p>● 漫遊撥打：<span class="text-red-600 font-bold">+81-90-8794-4568</span></p>
+                        <hr class="border-red-200">
+                        <p>● 日本警消：110 / 119</p>
+                    </div>
+                </div>
+
+                <div class="sketch-card p-5 border-sketch-green/30 text-xs">
+                    <h4 class="font-bold text-sketch-green mb-3"><i class="fas fa-plane-departure mr-2"></i>行李與航安</h4>
+                    <ul class="space-y-1 opacity-80">
+                        <li>● 託運行李：<span class="font-bold">23 kg</span></li>
+                        <li>● 手提行李：<span class="font-bold">7 kg</span></li>
+                        <li class="text-red-600 font-bold">● 禁止攜帶肉類、新鮮蔬果回國</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around py-3 z-50 shadow-lg">
+        <button onclick="switchTab('plan', this)" class="nav-item active flex flex-col items-center flex-1"><i class="fas fa-calendar-alt"></i><span class="text-[9px] mt-1 font-bold">行程</span></button>
+        <button onclick="switchTab('souvenir', this)" class="nav-item flex flex-col items-center flex-1"><i class="fas fa-bag-shopping"></i><span class="text-[9px] mt-1 font-bold">購物</span></button>
+        <button onclick="switchTab('wallet', this)" class="nav-item flex flex-col items-center flex-1"><i class="fas fa-coins"></i><span class="text-[9px] mt-1 font-bold">記帳</span></button>
+        <button onclick="switchTab('lists', this)" class="nav-item flex flex-col items-center flex-1"><i class="fas fa-tasks"></i><span class="text-[9px] mt-1 font-bold">清單</span></button>
+        <button onclick="switchTab('info', this)" class="nav-item flex flex-col items-center flex-1"><i class="fas fa-info-circle"></i><span class="text-[9px] mt-1 font-bold">資訊</span></button>
+    </nav>
+
+    <script>
+        // --- 完整行程資料更新 ---
+        const tripData = {
+            1: { hotel: "VILLA 塩江", hotelUrl: "https://www.hyper-inn.net/villa-shionoe", events: [
+                { time: "03:15", title: "🏢 公司集合搭大巴", isCritical: true },
+                { time: "06:55", title: "✈️ CI278 中華航空 (T2)", desc: "預計抵達高松 10:30", isCritical: true },
+                { time: "12:30", title: "午餐：鳴門海鮮定食", isMeal: true },
+                { time: "14:00", title: "【渦之道】鳴門觀潮船", guideKey: "g1_1" },
+                { time: "18:30", title: "晚餐：飯店迎賓會席料理", isMeal: true }
+            ]},
+            2: { hotel: "高松中心多米飯店", hotelUrl: "https://dormy-hotels.com/dormyinn/hotels/takamatsuchuo/", events: [
+                { time: "09:00", title: "【四國渡輪】前往小豆島" },
+                { time: "10:30", title: "【土渕海峽】世界第一窄", guideKey: "g2_1" },
+                { time: "11:30", title: "【小豆島橄欖樹公園】地中海風格", guideKey: "g2_2" },
+                { time: "12:30", title: "午餐：小豆島特色風味餐", isMeal: true },
+                { time: "14:00", title: "【寒霞溪】日本三大奇勝", guideKey: "g2_3" },
+                { time: "16:30", title: "【天使之道】神蹟沙洲步道", highlight: true, guideKey: "g2_4" },
+                { time: "19:00", title: "晚餐：高松中央商店街", isMeal: true, customKey: "c2_shop" }
+            ]},
+            3: { hotel: "道後溫泉 茶玻瑠", hotelUrl: "https://www.chaharu.com/main-zh-tw/", events: [
+                { time: "10:00", title: "【松山城】日本三大連立式平山城", guideKey: "g3_1" },
+                { time: "12:30", title: "午餐：愛媛鄉土海鮮風味御膳", isMeal: true },
+                { time: "14:30", title: "【道後溫泉街散策】日本三大古湯", guideKey: "g3_2" },
+                { time: "16:00", title: "【少爺音樂鐘】", guideKey: "g3_3" },
+                { time: "18:30", title: "晚餐：飯店和洋總匯自助餐", isMeal: true }
+            ]},
+            4: { hotel: "琴平溫泉 琴參閣", hotelUrl: "https://kotosankaku.jp/tw/", events: [
+                { time: "10:00", title: "【大步危峽遊覽船】", guideKey: "g4_1" },
+                { time: "11:30", title: "【祖谷葛藤橋】日本三大奇橋", guideKey: "g4_2" },
+                { time: "12:30", title: "午餐：大步危香魚料理御膳", isMeal: true },
+                { time: "14:30", title: "【免稅店】自由購物", guideKey: "g4_duty" },
+                { time: "16:00", title: "【金刀比羅宮】挑戰 785 階", highlight: true, guideKey: "g4_3" },
+                { time: "18:30", title: "晚餐：飯店日式會席料理", isMeal: true }
+            ]},
+            5: { hotel: "溫暖的家", hotelUrl: "#", events: [
+                { time: "09:30", title: "【栗林公園】迴遊式庭園", guideKey: "g5_1" },
+                { time: "11:30", title: "【中野烏龍麵學校】烏龍麵DIY", guideKey: "g5_2" },
+                { time: "12:30", title: "午餐：自製烏龍麵+日式御膳", isMeal: true },
+                { time: "14:30", title: "【AEON 購物中心】自由逛街" },
+                { time: "19:05", title: "✈️ CI179 中華航空 (回程)", desc: "預計抵達台灣 20:55", isCritical: true },
+                { time: "20:30", title: "晚餐：機上精緻簡餐", isMeal: true }
+            ]}
+        };
+
+        const guideInfo = {
+            g1_1: { text: "全長450公尺海上步道，透過強化玻璃俯瞰漩渦。特別安排觀潮船近距離震撼體驗。" },
+            g2_1: { text: "金氏紀錄世界第一窄海峽，最窄處僅9.93公尺。" },
+            g2_2: { text: "日本橄欖栽培發源地，《魔女宅急便》白色風車取景地。" },
+            g2_3: { text: "日本三大景觀溪谷，搭乘纜車欣賞奇岩怪石與絕美溪谷。" },
+            g2_4: { text: "每日僅乾潮期出現2次的沙洲，傳說與愛人走過能實現願望。" },
+            c2_shop: { text: "高松最長商店街，長度橫跨數個街區，適合購買藥妝與美食。" },
+            g3_1: { text: "又名金龜城、勝山城，海拔132公尺，日本百名城，擁有優越攻守機能的天守閣。" },
+            g3_2: { text: "3000年歷史日本最古溫泉，必訪少爺機關鐘與湯之町。" },
+            g3_3: { text: "08:00~22:00整點演奏，夏目漱石文學中的場景重現。" },
+            g4_1: { text: "約30分鐘船程，欣賞2km長壯麗奇岩與清澈溪水。" },
+            g4_2: { text: "橋身用山谷間野生的攀緣莖製成，享受腿腳發軟的刺激感。" },
+            g4_duty: { text: "最後掃貨機會，藥妝、零食一站購齊。" },
+            g4_3: { text: "供奉海上守護神“金毗羅”，主治療疾病及消災避禍。" },
+            g5_1: { text: "23萬坪大庭園，歷經340年的歲月仍相當美麗而優雅。" },
+            g5_2: { text: "學習正宗讚岐烏龍麵做法。" }
+        };
+
+        // --- 全域變數與儲存邏輯 ---
+        let currentDay = 1;
+        let tempExpImg = "";
+        const defaultSouvenirs = ["鳴門海帶", "鳴門金時地瓜", "葡萄饅頭", "橄欖製品", "小豆島手打素麵", "醬油豆", "今治毛巾", "少爺團子", "一六蛋糕捲", "母惠夢", "山田屋饅頭", "CHU CHU果凍", "炙饅頭", "烏龍麵", "奶油銅鑼燒", "Quattro起司蝦餅"];
+
+        window.onload = () => {
+            if(!localStorage.getItem('mySouvenirs')) localStorage.setItem('mySouvenirs', JSON.stringify(defaultSouvenirs));
+            if(!localStorage.getItem('myChecklist')) {
+                const initList = ["護照", "網卡/Wifi", "日幣", "行動電源", "換洗衣物"].map(t => ({text: t, done: false}));
+                localStorage.setItem('myChecklist', JSON.stringify(initList));
+            }
+            switchDay(1);
+            renderSouvenirs();
+            renderExpenses();
+            renderCheckList();
+            document.getElementById('memoInput').value = localStorage.getItem('tripMemo') || '';
+            updateMemo();
+
+            Sortable.create(document.getElementById('souvenirList'), { animation: 150, onEnd: saveSouvenirOrder });
+            Sortable.create(document.getElementById('expenseList'), { animation: 150, handle: '.handle', onEnd: saveExpenseOrder });
+        };
+
+        // --- 同步功能 (Export/Import) ---
+        function exportData() {
+            const allData = {
+                souvenirs: JSON.parse(localStorage.getItem('mySouvenirs')),
+                expenses: JSON.parse(localStorage.getItem('tripExpenses')),
+                checklist: JSON.parse(localStorage.getItem('myChecklist')),
+                memo: localStorage.getItem('tripMemo'),
+                customData: JSON.parse(localStorage.getItem('customData') || '{}'),
+                customImgs: JSON.parse(localStorage.getItem('customImgs') || '{}'),
+                shopImgs: JSON.parse(localStorage.getItem('shopImgs') || '{}')
+            };
+            const b64 = btoa(encodeURIComponent(JSON.stringify(allData)));
+            const tempInput = document.createElement('textarea');
+            tempInput.value = b64;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            alert("代碼已複製！請貼到手機中。");
+        }
+
+        function importData() {
+            const b64 = prompt("請貼上匯出代碼：");
+            if(!b64) return;
+            try {
+                const data = JSON.parse(decodeURIComponent(atob(b64)));
+                if(confirm("匯入將覆蓋目前手機上的資料，確定嗎？")) {
+                    localStorage.setItem('mySouvenirs', JSON.stringify(data.souvenirs));
+                    localStorage.setItem('tripExpenses', JSON.stringify(data.expenses));
+                    localStorage.setItem('myChecklist', JSON.stringify(data.checklist));
+                    localStorage.setItem('tripMemo', data.memo);
+                    localStorage.setItem('customData', JSON.stringify(data.customData));
+                    localStorage.setItem('customImgs', JSON.stringify(data.customImgs));
+                    localStorage.setItem('shopImgs', JSON.stringify(data.shopImgs));
+                    location.reload();
+                }
+            } catch(e) { alert("代碼錯誤，請重新複製！"); }
+        }
+
+        // --- 原有邏輯模組 ---
+        function switchTab(t, b) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(t).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            b.classList.add('active');
+            document.getElementById('dayIndicator').style.opacity = (t === 'plan') ? '1' : '0';
+        }
+
+        function switchDay(d) {
+            currentDay = d;
+            document.querySelectorAll('.day-btn').forEach((btn, i) => {
+                btn.classList.toggle('bg-sketch-green', i+1 === d);
+                btn.classList.toggle('text-white', i+1 === d);
+            });
+            document.getElementById('dayIndicator').innerText = `Day ${d}`;
+            renderPlan();
+        }
+
+        function renderPlan() {
+            const container = document.getElementById('planItems');
+            const data = tripData[currentDay];
+            const customData = JSON.parse(localStorage.getItem('customData') || '{}');
+            const customImgs = JSON.parse(localStorage.getItem('customImgs') || '{}');
+
+            let html = `<a href="${data.hotelUrl}" target="_blank" class="block sketch-card p-4 bg-sketch-water/20 border-dashed mb-6"><p class="text-[10px] font-bold opacity-60">HOTEL STAY</p><p class="font-bold text-sm flex justify-between items-center">${data.hotel}<i class="fas fa-external-link-alt text-[10px] opacity-40"></i></p></a>`;
+            data.events.forEach(ev => {
+                const key = ev.guideKey || ev.customKey;
+                const highlight = ev.isCritical ? 'bg-sketch-critical text-white px-2 py-0.5 rounded' : (ev.highlight?'text-sketch-accent':'opacity-40');
+                html += `<div class="relative pl-6 border-l-2 border-sketch-ink/10 py-1 mb-2">
+                    <div class="absolute -left-[9px] top-3 w-4 h-4 rounded-full border-2 border-sketch-ink bg-white"></div>
+                    <span class="text-[10px] font-bold ${highlight}">${ev.time}</span>
+                    <h4 class="font-bold text-sm ${ev.isMeal?'italic text-sketch-earth':''}">${ev.title}</h4>
+                    ${ev.desc?`<p class="text-[10px] opacity-60 mt-1">${ev.desc}</p>`:''}
+                    ${key ? `<button onclick="this.nextElementSibling.classList.toggle('hidden')" class="text-[10px] text-sketch-green underline mt-2">深度導覽 <i class="fas fa-chevron-down ml-1"></i></button>
+                    <div class="hidden mt-2 sketch-card p-3 bg-white text-xs">
+                        <div class="relative w-full h-32 bg-gray-100 rounded mb-2 overflow-hidden border">
+                            <img src="${customImgs[key] || ''}" class="w-full h-full object-cover">
+                            <label class="absolute bottom-1 right-1 bg-white/90 p-1 rounded cursor-pointer"><i class="fas fa-camera text-xs"></i><input type="file" accept="image/*" class="hidden" onchange="compressImg(this, 'guide', '${key}')"></label>
+                        </div>
+                        <textarea oninput="saveCustomText('${key}', this.value)" class="w-full p-2 bg-sketch-bg rounded text-[11px]" placeholder="寫下心情...">${customData[key] || (guideInfo[key] ? guideInfo[key].text : '')}</textarea>
+                    </div>` : ''}
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderSouvenirs() {
+            const list = JSON.parse(localStorage.getItem('mySouvenirs'));
+            const container = document.getElementById('souvenirList');
+            const imgs = JSON.parse(localStorage.getItem('shopImgs') || '{}');
+            container.innerHTML = list.map(name => `
+                <div class="sketch-card p-3 flex items-center space-x-4 bg-white" data-id="${name}">
+                    <div class="relative w-12 h-12 bg-sketch-bg flex-shrink-0 rounded-lg overflow-hidden border">
+                        <img src="${imgs['shop_'+name] || ''}" class="w-full h-full object-cover">
+                        <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="compressImg(this, 'shop', 'shop_${name}')">
+                    </div>
+                    <h4 class="font-bold text-sm flex-1">${name}</h4>
+                    <button onclick="deleteShopItem('${name}')" class="text-gray-200"><i class="fas fa-times"></i></button>
+                </div>
+            `).join('');
+        }
+
+        // 其他功能 (記帳、清單、壓縮) 與先前版本邏輯相同
+        function calcTwd(jpy) { document.getElementById('twdCalcOutput').innerText = Math.round(jpy / 5); }
+
+        function saveExpense() {
+            const date = document.getElementById('expDate').value;
+            const name = document.getElementById('expName').value;
+            const amt = document.getElementById('expAmt').value;
+            if(!name || !amt) return;
+            const list = JSON.parse(localStorage.getItem('tripExpenses') || '[]');
+            list.unshift({ id: Date.now(), date, name, amt, img: tempExpImg });
+            localStorage.setItem('tripExpenses', JSON.stringify(list));
+            document.getElementById('expName').value = ""; document.getElementById('expAmt').value = "";
+            document.getElementById('expensePreview').classList.add('hidden');
+            tempExpImg = ""; renderExpenses();
+        }
+
+        function renderExpenses() {
+            const list = JSON.parse(localStorage.getItem('tripExpenses') || '[]');
+            const filter = document.getElementById('filterDate').value;
+            const filtered = filter === 'ALL' ? list : list.filter(e => e.date === filter);
+            document.getElementById('expenseList').innerHTML = filtered.map(e => `
+                <div class="bg-white p-3 rounded-lg border border-sketch-ink flex items-center handle" data-id="${e.id}">
+                    ${e.img ? `<img src="${e.img}" class="w-10 h-10 object-cover rounded mr-3">` : `<div class="w-10 h-10 bg-sketch-bg rounded mr-3"></div>`}
+                    <div class="flex-1 text-[10px]">
+                        <p class="font-bold text-sketch-accent">${e.date}</p>
+                        <p class="font-bold text-sketch-ink">${e.name}</p>
+                    </div>
+                    <div class="text-right mr-3"><p class="font-bold text-sketch-green text-sm">¥${e.amt}</p></div>
+                    <button onclick="deleteExpense(${e.id})" class="text-gray-200"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function deleteExpense(id) {
+            let list = JSON.parse(localStorage.getItem('tripExpenses') || '[]');
+            localStorage.setItem('tripExpenses', JSON.stringify(list.filter(e => e.id !== id)));
+            renderExpenses();
+        }
+
+        function renderCheckList() {
+            const list = JSON.parse(localStorage.getItem('myChecklist'));
+            document.getElementById('checkListItems').innerHTML = list.map((item, i) => `
+                <label class="flex items-center space-x-3 cursor-pointer">
+                    <input type="checkbox" onchange="toggleCheck(${i})" ${item.done?'checked':''}>
+                    <span class="text-sm ${item.done?'line-through opacity-30':''}">${item.text}</span>
+                </label>
+            `).join('');
+        }
+
+        function toggleCheck(i) {
+            let list = JSON.parse(localStorage.getItem('myChecklist'));
+            list[i].done = !list[i].done;
+            localStorage.setItem('myChecklist', JSON.stringify(list));
+            renderCheckList();
+        }
+
+        function updateMemo() {
+            const text = document.getElementById('memoInput').value;
+            localStorage.setItem('tripMemo', text);
+            const urls = text.match(/(https?:\/\/[^\s]+)/g) || [];
+            document.getElementById('memoLinks').innerHTML = urls.map(url => `<a href="${url}" target="_blank" class="bg-sketch-water text-white px-3 py-1 rounded-full text-[10px] font-bold truncate max-w-[150px]"><i class="fas fa-link mr-1"></i>Link</a>`).join('');
+        }
+
+        function compressImg(input, type, key) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = 400; canvas.height = img.height * (400 / img.width);
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        const b64 = canvas.toDataURL('image/jpeg', 0.6);
+                        if(type === 'expense_temp') { tempExpImg = b64; document.querySelector('#expensePreview img').src = b64; document.getElementById('expensePreview').classList.remove('hidden'); }
+                        else if(type === 'guide') { const imgs = JSON.parse(localStorage.getItem('customImgs') || '{}'); imgs[key] = b64; localStorage.setItem('customImgs', JSON.stringify(imgs)); renderPlan(); }
+                        else if(type === 'shop') { const imgs = JSON.parse(localStorage.getItem('shopImgs') || '{}'); imgs[key] = b64; localStorage.setItem('shopImgs', JSON.stringify(imgs)); renderSouvenirs(); }
+                    };
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 資料儲存輔助
+        function addCheckItem() {
+            const val = document.getElementById('newCheckItem').value; if(!val) return;
+            const list = JSON.parse(localStorage.getItem('myChecklist'));
+            list.push({text: val, done: false}); localStorage.setItem('myChecklist', JSON.stringify(list));
+            document.getElementById('newCheckItem').value = ""; renderCheckList();
+        }
+        function addShopItem() {
+            const val = document.getElementById('newShopItem').value; if(!val) return;
+            const list = JSON.parse(localStorage.getItem('mySouvenirs'));
+            list.push(val); localStorage.setItem('mySouvenirs', JSON.stringify(list));
+            document.getElementById('newShopItem').value = ""; renderSouvenirs();
+        }
+        function deleteShopItem(n) {
+            const list = JSON.parse(localStorage.getItem('mySouvenirs')).filter(i => i !== n);
+            localStorage.setItem('mySouvenirs', JSON.stringify(list)); renderSouvenirs();
+        }
+        function saveSouvenirOrder() {
+            const items = Array.from(document.querySelectorAll('#souvenirList > div')).map(el => el.getAttribute('data-id'));
+            localStorage.setItem('mySouvenirs', JSON.stringify(items));
+        }
+        function saveExpenseOrder() {
+            const ids = Array.from(document.querySelectorAll('#expenseList > div')).map(el => el.getAttribute('data-id'));
+            const list = JSON.parse(localStorage.getItem('tripExpenses') || '[]');
+            const reordered = ids.map(id => list.find(e => e.id == id));
+            localStorage.setItem('tripExpenses', JSON.stringify(reordered));
+        }
+        function saveCustomText(key, val) {
+            const data = JSON.parse(localStorage.getItem('customData') || '{}');
+            data[key] = val; localStorage.setItem('customData', JSON.stringify(data));
+        }
+    </script>
+</body>
+</html>
