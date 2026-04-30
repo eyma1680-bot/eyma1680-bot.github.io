@@ -23,6 +23,7 @@
         }
     </script>
     <style>
+        html, body { overflow-x: hidden; }
         body { font-family: 'Zen Maru Gothic', sans-serif; background-color: #FAF7F2; color: #4A443F; -webkit-tap-highlight-color: transparent; }
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
@@ -45,7 +46,7 @@
         <div id="dayIndicator" class="bg-sketch-accent text-white px-3 py-1 rounded-full text-base font-bold">Day 1</div>
     </header>
 
-    <main class="max-w-md mx-auto p-4">
+    <main class="max-w-md mx-auto px-4 pl-4 pr-6 py-4">
         
         <!-- 1. 行程 (PLAN) -->
         <section id="plan" class="tab-content active">
@@ -146,7 +147,7 @@
                     </div>
                     <i class="fas fa-cloud-sun text-blue-400 text-2xl"></i>
                 </a>
-
+	
 
                 <div class="sketch-card p-5 bg-red-50/50 border-red-200">
                     <h4 class="font-bold text-red-800 mb-3 text-base"><i class="fas fa-phone-alt mr-2"></i>緊急聯絡資訊</h4>
