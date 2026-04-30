@@ -35,6 +35,8 @@
         input[type="checkbox"] { appearance: none; width: 18px; height: 18px; border: 2px solid #4A443F; border-radius: 4px; cursor: pointer; position: relative; }
         input[type="checkbox"]:checked { background-color: #8EA66E; }
         input[type="checkbox"]:checked::after { content: "✓"; position: absolute; color: white; font-size: 14px; left: 2px; top: -3px; }
+        .sortable-ghost-hide { opacity: 0 !important; }
+        .sortable-drag-hide { opacity: 1 !important; box-shadow: 4px 4px 0px #4A443F !important; }
     </style>
 </head>
 <body class="pb-24">
@@ -265,8 +267,8 @@
             document.getElementById('memoInput').value = localStorage.getItem('tripMemo') || '';
             updateMemo();
 
-            Sortable.create(document.getElementById('souvenirList'), { animation: 150, delay: 500, delayOnTouchOnly: true, forceFallback: true, fallbackTolerance: 5, onEnd: saveSouvenirOrder });
-            Sortable.create(document.getElementById('expenseList'), { animation: 150, handle: '.handle', onEnd: saveExpenseOrder });
+            Sortable.create(document.getElementById('souvenirList'), { animation: 0, delay: 500, delayOnTouchOnly: true, forceFallback: true, fallbackTolerance: 5, ghostClass: 'sortable-ghost-hide', dragClass: 'sortable-drag-hide', onEnd: saveSouvenirOrder });
+            Sortable.create(document.getElementById('expenseList'), { animation: 0, delay: 500, delayOnTouchOnly: true, forceFallback: true, fallbackTolerance: 5, ghostClass: 'sortable-ghost-hide', dragClass: 'sortable-drag-hide', onEnd: saveExpenseOrder });
         };
 
         // --- 同步功能 (Export/Import) ---
@@ -340,7 +342,7 @@
             data.events.forEach(ev => {
                 const key = ev.guideKey || ev.customKey;
                 const highlight = ev.isCritical ? 'bg-sketch-critical text-white px-2 py-0.5 rounded' : (ev.highlight?'text-sketch-accent':'opacity-40');
-                html += `<div class="relative pl-6 border-l-2 border-sketch-ink/10 py-1 mb-2">
+                html += `<div class="relative pl-8 border-l-2 border-sketch-ink/10 py-1 mb-2" style="margin-left:10px">
                     <div class="absolute -left-[9px] top-3 w-4 h-4 rounded-full border-2 border-sketch-ink bg-white"></div>
                     <span class="text-base font-bold ${highlight}">${ev.time}</span>
                     <h4 class="font-bold text-base ${ev.isMeal?'italic text-sketch-earth':''}">${ev.title}</h4>
