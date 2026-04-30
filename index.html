@@ -47,7 +47,7 @@
         <div id="dayIndicator" class="bg-sketch-accent text-white px-3 py-1 rounded-full text-base font-bold">Day 1</div>
     </header>
 
-    <main class="max-w-md mx-auto px-4 pr-6 py-4" style="overflow-x:hidden;width:100%;box-sizing:border-box;">
+    <main class="max-w-md mx-auto py-4" style="overflow-x:hidden;width:100%;box-sizing:border-box;padding-left:16px;padding-right:40px;">
         
         <!-- 1. 行程 (PLAN) -->
         <section id="plan" class="tab-content active">
@@ -265,7 +265,7 @@
             document.getElementById('memoInput').value = localStorage.getItem('tripMemo') || '';
             updateMemo();
 
-            Sortable.create(document.getElementById('souvenirList'), { animation: 150, delay: 500, delayOnTouchOnly: true, onEnd: saveSouvenirOrder });
+            Sortable.create(document.getElementById('souvenirList'), { animation: 150, delay: 500, delayOnTouchOnly: true, forceFallback: true, fallbackTolerance: 5, onEnd: saveSouvenirOrder });
             Sortable.create(document.getElementById('expenseList'), { animation: 150, handle: '.handle', onEnd: saveExpenseOrder });
         };
 
