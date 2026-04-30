@@ -40,9 +40,9 @@
     <header class="p-5 bg-white border-b-2 border-sketch-ink sticky top-0 z-50 flex justify-between items-center shadow-sm">
         <div>
             <h1 class="text-xl font-bold italic">四國之詩 <span class="text-sketch-green">2026</span></h1>
-            <p class="text-[10px] opacity-50 uppercase tracking-widest">Digital Travel Handbook</p>
+            <p class="text-base opacity-50 uppercase tracking-widest">Digital Travel Handbook</p>
         </div>
-        <div id="dayIndicator" class="bg-sketch-accent text-white px-3 py-1 rounded-full text-xs font-bold">Day 1</div>
+        <div id="dayIndicator" class="bg-sketch-accent text-white px-3 py-1 rounded-full text-base font-bold">Day 1</div>
     </header>
 
     <main class="max-w-md mx-auto p-4">
@@ -53,7 +53,7 @@
                 <script>
                     const days = ["5/8 (五)", "5/9 (六)", "5/10 (日)", "5/11 (一)", "5/12 (二)"];
                     days.forEach((d, i) => {
-                        document.write(`<button onclick="switchDay(${i+1})" id="dayBtn${i+1}" class="day-btn shrink-0 px-4 py-2 rounded-full border-2 border-sketch-ink font-bold transition-all ${i===0?'bg-sketch-green text-white shadow-md':'bg-white'} text-xs">D${i+1} ${d}</button>`);
+                        document.write(`<button onclick="switchDay(${i+1})" id="dayBtn${i+1}" class="day-btn shrink-0 px-4 py-2 rounded-full border-2 border-sketch-ink font-bold transition-all ${i===0?'bg-sketch-green text-white shadow-md':'bg-white'} text-base">D${i+1} ${d}</button>`);
                     });
                 </script>
             </div>
@@ -64,7 +64,7 @@
         <section id="souvenir" class="tab-content">
             <h2 class="text-xl font-bold mb-6 italic border-l-4 border-sketch-accent pl-3">Shopping List</h2>
             <div class="flex space-x-2 mb-6">
-                <input type="text" id="newShopItem" placeholder="新增伴手禮..." class="flex-1 p-2 border-b-2 border-sketch-ink bg-transparent text-sm focus:outline-none">
+                <input type="text" id="newShopItem" placeholder="新增伴手禮..." class="flex-1 p-2 border-b-2 border-sketch-ink bg-transparent text-base focus:outline-none">
                 <button onclick="addShopItem()" class="bg-sketch-earth text-white px-4 py-2 rounded-lg font-bold shadow-sm">+</button>
             </div>
             <div class="space-y-3" id="souvenirList"></div>
@@ -74,7 +74,7 @@
         <section id="wallet" class="tab-content">
             <div class="sketch-card p-4 mb-6 bg-sketch-water/10 flex items-center justify-between">
                 <div>
-                    <p class="text-[10px] font-bold opacity-60">匯率換算 (JPY / 5 = TWD)</p>
+                    <p class="text-base font-bold opacity-60">匯率換算 (JPY / 5 = TWD)</p>
                     <div class="flex items-center space-x-2 mt-1">
                         <input type="number" id="jpyCalc" oninput="calcTwd(this.value)" placeholder="輸入日幣" class="w-24 bg-transparent border-b-2 border-sketch-ink text-lg font-bold focus:outline-none">
                         <span class="font-bold text-sketch-green">≈ NT$ <span id="twdCalcOutput">0</span></span>
@@ -84,29 +84,29 @@
             </div>
 
             <div class="sketch-card p-4 mb-6">
-                <h3 class="font-bold mb-3 text-xs">記錄支出</h3>
+                <h3 class="font-bold mb-3 text-base">記錄支出</h3>
                 <div class="grid grid-cols-2 gap-2 mb-2">
-                    <select id="expDate" class="p-2 border border-sketch-ink rounded text-xs bg-white">
+                    <select id="expDate" class="p-2 border border-sketch-ink rounded text-base bg-white">
                         <option value="D0 事前">D0 事前</option><option value="D1 5/8">D1 5/8</option>
                         <option value="D2 5/9">D2 5/9</option><option value="D3 5/10">D3 5/10</option>
                         <option value="D4 5/11">D4 5/11</option><option value="D5 5/12">D5 5/12</option>
                     </select>
-                    <input type="text" id="expName" placeholder="品項名稱" class="p-2 border-b border-sketch-ink text-xs focus:outline-none">
+                    <input type="text" id="expName" placeholder="品項名稱" class="p-2 border-b border-sketch-ink text-base focus:outline-none">
                 </div>
                 <div class="flex items-center space-x-2 mb-4">
-                    <input type="number" id="expAmt" placeholder="日幣金額" class="flex-1 p-2 border-b border-sketch-ink text-xs">
-                    <label class="cursor-pointer bg-sketch-bg p-2 rounded border border-sketch-ink text-xs">
+                    <input type="number" id="expAmt" placeholder="日幣金額" class="flex-1 p-2 border-b border-sketch-ink text-base">
+                    <label class="cursor-pointer bg-sketch-bg p-2 rounded border border-sketch-ink text-base">
                         <i class="fas fa-camera"></i>
                         <input type="file" accept="image/*" class="hidden" onchange="compressImg(this, 'expense_temp')">
                     </label>
                 </div>
                 <div id="expensePreview" class="hidden mb-4"><img src="" class="w-full h-32 object-cover rounded border"></div>
-                <button onclick="saveExpense()" class="w-full bg-sketch-ink text-white py-3 rounded-lg font-bold shadow-md active:scale-95 text-sm">儲存帳目</button>
+                <button onclick="saveExpense()" class="w-full bg-sketch-ink text-white py-3 rounded-lg font-bold shadow-md active:scale-95 text-base">儲存帳目</button>
             </div>
 
             <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-xs italic">支出明細</h3>
-                <select id="filterDate" onchange="renderExpenses()" class="text-[10px] border-none bg-transparent font-bold text-sketch-green">
+                <h3 class="font-bold text-base italic">支出明細</h3>
+                <select id="filterDate" onchange="renderExpenses()" class="text-base border-none bg-transparent font-bold text-sketch-green">
                     <option value="ALL">顯示全部</option>
                     <option value="D0 事前">D0 事前</option><option value="D1 5/8">D1 5/8</option>
                     <option value="D2 5/9">D2 5/9</option><option value="D3 5/10">D3 5/10</option>
@@ -122,14 +122,14 @@
                 <h3 class="font-bold text-sketch-green mb-4 border-b-2 border-dashed pb-2">行前準備 CheckList</h3>
                 <div id="checkListItems" class="space-y-3 mb-6"></div>
                 <div class="flex space-x-2">
-                    <input type="text" id="newCheckItem" placeholder="新增物品..." class="flex-1 p-2 border-b border-sketch-ink bg-transparent text-sm focus:outline-none">
+                    <input type="text" id="newCheckItem" placeholder="新增物品..." class="flex-1 p-2 border-b border-sketch-ink bg-transparent text-base focus:outline-none">
                     <button onclick="addCheckItem()" class="bg-sketch-green text-white px-4 py-2 rounded-lg font-bold">+</button>
                 </div>
             </div>
 
             <div class="sketch-card p-5">
-                <h3 class="font-bold mb-3 text-xs italic">個人備忘錄 Memo</h3>
-                <textarea id="memoInput" oninput="updateMemo()" class="w-full h-32 bg-sketch-bg border-none p-3 rounded-lg text-sm focus:ring-0 mb-4" placeholder="輸入文字，網址會自動轉連結..."></textarea>
+                <h3 class="font-bold mb-3 text-base italic">個人備忘錄 Memo</h3>
+                <textarea id="memoInput" oninput="updateMemo()" class="w-full h-32 bg-sketch-bg border-none p-3 rounded-lg text-base focus:ring-0 mb-4" placeholder="輸入文字，網址會自動轉連結..."></textarea>
                 <div id="memoLinks" class="flex flex-wrap gap-2"></div>
             </div>
         </section>
@@ -142,7 +142,7 @@
                 	<a href="https://www.jma.go.jp/bosai/#pattern=forecast&area_type=offices&area_code=370000" target="_blank" class="block sketch-card p-5 flex justify-between items-		center bg-blue-50/50">
                  	 	  <div>
                     	    <h4 class="font-bold text-blue-800">日本氣象廳 (香川預報)</h4>
-                 	  <p class="text-[10px] opacity-60">點擊查看一週氣溫與降雨</p>
+                 	  <p class="text-base opacity-60">點擊查看一週氣溫與降雨</p>
                     </div>
                     <i class="fas fa-cloud-sun text-blue-400 text-2xl"></i>
                 </a>
@@ -150,19 +150,19 @@
 
 	<!-- 資料備份與同步 -->
                 <div class="sketch-card p-5 bg-sketch-water/20">
-                    <h4 class="font-bold text-sm mb-3"><i class="fas fa-sync-alt mr-2"></i>跨裝置同步 (電腦 ↔ 手機)</h4>
-                    <p class="text-[10px] mb-3 opacity-70">在電腦編輯完圖片後，點擊「匯出代碼」並傳至手機，再於手機「匯入代碼」即可同步。</p>
+                    <h4 class="font-bold text-base mb-3"><i class="fas fa-sync-alt mr-2"></i>跨裝置同步 (電腦 ↔ 手機)</h4>
+                    <p class="text-base mb-3 opacity-70">在電腦編輯完圖片後，點擊「匯出代碼」並傳至手機，再於手機「匯入代碼」即可同步。</p>
                     <div class="flex space-x-2">
-                        <button onclick="exportData()" class="flex-1 bg-sketch-ink text-white py-2 rounded text-[10px] font-bold">匯出代碼</button>
-                        <button onclick="importData()" class="flex-1 border-2 border-sketch-ink py-2 rounded text-[10px] font-bold">匯入代碼</button>
+                        <button onclick="exportData()" class="flex-1 bg-sketch-ink text-white py-2 rounded text-base font-bold">匯出代碼</button>
+                        <button onclick="importData()" class="flex-1 border-2 border-sketch-ink py-2 rounded text-base font-bold">匯入代碼</button>
                     </div>
                 </div>
 		
 		
 
                 <div class="sketch-card p-5 bg-red-50/50 border-red-200">
-                    <h4 class="font-bold text-red-800 mb-3 text-sm"><i class="fas fa-phone-alt mr-2"></i>緊急聯絡資訊</h4>
-                    <div class="text-xs space-y-2">
+                    <h4 class="font-bold text-red-800 mb-3 text-base"><i class="fas fa-phone-alt mr-2"></i>緊急聯絡資訊</h4>
+                    <div class="text-base space-y-2">
                         <p class="font-bold">台北駐大阪辦事處：</p>
                         <p>● 緊急電話：<span class="text-red-600 font-bold">090-8794-4568</span></p>
                         <p>● 漫遊撥打：<span class="text-red-600 font-bold">+81-90-8794-4568</span></p>
@@ -171,7 +171,7 @@
                     </div>
                 </div>
 
-                <div class="sketch-card p-5 border-sketch-green/30 text-xs">
+                <div class="sketch-card p-5 border-sketch-green/30 text-base">
                     <h4 class="font-bold text-sketch-green mb-3"><i class="fas fa-plane-departure mr-2"></i>行李與航安</h4>
                     <ul class="space-y-1 opacity-80">
                         <li>● 託運行李：<span class="font-bold">23 kg</span></li>
@@ -184,11 +184,11 @@
     </main>
 
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around py-3 z-50 shadow-lg">
-        <button onclick="switchTab('plan', this)" class="nav-item active flex flex-col items-center flex-1"><i class="fas fa-calendar-alt"></i><span class="text-[9px] mt-1 font-bold">行程</span></button>
-        <button onclick="switchTab('souvenir', this)" class="nav-item flex flex-col items-center flex-1"><i class="fas fa-bag-shopping"></i><span class="text-[9px] mt-1 font-bold">購物</span></button>
-        <button onclick="switchTab('wallet', this)" class="nav-item flex flex-col items-center flex-1"><i class="fas fa-coins"></i><span class="text-[9px] mt-1 font-bold">記帳</span></button>
-        <button onclick="switchTab('lists', this)" class="nav-item flex flex-col items-center flex-1"><i class="fas fa-tasks"></i><span class="text-[9px] mt-1 font-bold">清單</span></button>
-        <button onclick="switchTab('info', this)" class="nav-item flex flex-col items-center flex-1"><i class="fas fa-info-circle"></i><span class="text-[9px] mt-1 font-bold">資訊</span></button>
+        <button onclick="switchTab('plan', this)" class="nav-item active flex flex-col items-center flex-1"><i class="fas fa-calendar-alt"></i><span class="text-base mt-1 font-bold">行程</span></button>
+        <button onclick="switchTab('souvenir', this)" class="nav-item flex flex-col items-center flex-1"><i class="fas fa-bag-shopping"></i><span class="text-base mt-1 font-bold">購物</span></button>
+        <button onclick="switchTab('wallet', this)" class="nav-item flex flex-col items-center flex-1"><i class="fas fa-coins"></i><span class="text-base mt-1 font-bold">記帳</span></button>
+        <button onclick="switchTab('lists', this)" class="nav-item flex flex-col items-center flex-1"><i class="fas fa-tasks"></i><span class="text-base mt-1 font-bold">清單</span></button>
+        <button onclick="switchTab('info', this)" class="nav-item flex flex-col items-center flex-1"><i class="fas fa-info-circle"></i><span class="text-base mt-1 font-bold">資訊</span></button>
     </nav>
 
     <script>
@@ -339,22 +339,22 @@
             const customData = JSON.parse(localStorage.getItem('customData') || '{}');
             const customImgs = JSON.parse(localStorage.getItem('customImgs') || '{}');
 
-            let html = `<a href="${data.hotelUrl}" target="_blank" class="block sketch-card p-4 bg-sketch-water/20 border-dashed mb-6"><p class="text-[10px] font-bold opacity-60">HOTEL STAY</p><p class="font-bold text-sm flex justify-between items-center">${data.hotel}<i class="fas fa-external-link-alt text-[10px] opacity-40"></i></p></a>`;
+            let html = `<a href="${data.hotelUrl}" target="_blank" class="block sketch-card p-4 bg-sketch-water/20 border-dashed mb-6"><p class="text-base font-bold opacity-60">HOTEL STAY</p><p class="font-bold text-base flex justify-between items-center">${data.hotel}<i class="fas fa-external-link-alt text-base opacity-40"></i></p></a>`;
             data.events.forEach(ev => {
                 const key = ev.guideKey || ev.customKey;
                 const highlight = ev.isCritical ? 'bg-sketch-critical text-white px-2 py-0.5 rounded' : (ev.highlight?'text-sketch-accent':'opacity-40');
                 html += `<div class="relative pl-6 border-l-2 border-sketch-ink/10 py-1 mb-2">
                     <div class="absolute -left-[9px] top-3 w-4 h-4 rounded-full border-2 border-sketch-ink bg-white"></div>
-                    <span class="text-[10px] font-bold ${highlight}">${ev.time}</span>
-                    <h4 class="font-bold text-sm ${ev.isMeal?'italic text-sketch-earth':''}">${ev.title}</h4>
-                    ${ev.desc?`<p class="text-[10px] opacity-60 mt-1">${ev.desc}</p>`:''}
-                    ${key ? `<button onclick="this.nextElementSibling.classList.toggle('hidden')" class="text-[10px] text-sketch-green underline mt-2">深度導覽 <i class="fas fa-chevron-down ml-1"></i></button>
-                    <div class="hidden mt-2 sketch-card p-3 bg-white text-xs">
+                    <span class="text-base font-bold ${highlight}">${ev.time}</span>
+                    <h4 class="font-bold text-base ${ev.isMeal?'italic text-sketch-earth':''}">${ev.title}</h4>
+                    ${ev.desc?`<p class="text-base opacity-60 mt-1">${ev.desc}</p>`:''}
+                    ${key ? `<button onclick="this.nextElementSibling.classList.toggle('hidden')" class="text-base text-sketch-green underline mt-2">深度導覽 <i class="fas fa-chevron-down ml-1"></i></button>
+                    <div class="hidden mt-2 sketch-card p-3 bg-white text-base">
                         <div class="relative w-full h-32 bg-gray-100 rounded mb-2 overflow-hidden border">
                             <img src="${customImgs[key] || ''}" class="w-full h-full object-cover">
-                            <label class="absolute bottom-1 right-1 bg-white/90 p-1 rounded cursor-pointer"><i class="fas fa-camera text-xs"></i><input type="file" accept="image/*" class="hidden" onchange="compressImg(this, 'guide', '${key}')"></label>
+                            <label class="absolute bottom-1 right-1 bg-white/90 p-1 rounded cursor-pointer"><i class="fas fa-camera text-base"></i><input type="file" accept="image/*" class="hidden" onchange="compressImg(this, 'guide', '${key}')"></label>
                         </div>
-                        <textarea oninput="saveCustomText('${key}', this.value)" class="w-full p-2 bg-sketch-bg rounded text-[11px]" placeholder="寫下心情...">${customData[key] || (guideInfo[key] ? guideInfo[key].text : '')}</textarea>
+                        <textarea oninput="saveCustomText('${key}', this.value)" class="w-full p-2 bg-sketch-bg rounded text-base" placeholder="寫下心情...">${customData[key] || (guideInfo[key] ? guideInfo[key].text : '')}</textarea>
                     </div>` : ''}
                 </div>`;
             });
@@ -371,7 +371,7 @@
                         <img src="${imgs['shop_'+name] || ''}" class="w-full h-full object-cover">
                         <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="compressImg(this, 'shop', 'shop_${name}')">
                     </div>
-                    <h4 class="font-bold text-sm flex-1">${name}</h4>
+                    <h4 class="font-bold text-base flex-1">${name}</h4>
                     <button onclick="deleteShopItem('${name}')" class="text-gray-200"><i class="fas fa-times"></i></button>
                 </div>
             `).join('');
@@ -400,11 +400,11 @@
             document.getElementById('expenseList').innerHTML = filtered.map(e => `
                 <div class="bg-white p-3 rounded-lg border border-sketch-ink flex items-center handle" data-id="${e.id}">
                     ${e.img ? `<img src="${e.img}" class="w-10 h-10 object-cover rounded mr-3">` : `<div class="w-10 h-10 bg-sketch-bg rounded mr-3"></div>`}
-                    <div class="flex-1 text-[10px]">
+                    <div class="flex-1 text-base">
                         <p class="font-bold text-sketch-accent">${e.date}</p>
                         <p class="font-bold text-sketch-ink">${e.name}</p>
                     </div>
-                    <div class="text-right mr-3"><p class="font-bold text-sketch-green text-sm">¥${e.amt}</p></div>
+                    <div class="text-right mr-3"><p class="font-bold text-sketch-green text-base">¥${e.amt}</p></div>
                     <button onclick="deleteExpense(${e.id})" class="text-gray-200"><i class="fas fa-trash"></i></button>
                 </div>
             `).join('');
@@ -421,7 +421,7 @@
             document.getElementById('checkListItems').innerHTML = list.map((item, i) => `
                 <label class="flex items-center space-x-3 cursor-pointer">
                     <input type="checkbox" onchange="toggleCheck(${i})" ${item.done?'checked':''}>
-                    <span class="text-sm ${item.done?'line-through opacity-30':''}">${item.text}</span>
+                    <span class="text-base ${item.done?'line-through opacity-30':''}">${item.text}</span>
                 </label>
             `).join('');
         }
@@ -437,7 +437,7 @@
             const text = document.getElementById('memoInput').value;
             localStorage.setItem('tripMemo', text);
             const urls = text.match(/(https?:\/\/[^\s]+)/g) || [];
-            document.getElementById('memoLinks').innerHTML = urls.map(url => `<a href="${url}" target="_blank" class="bg-sketch-water text-white px-3 py-1 rounded-full text-[10px] font-bold truncate max-w-[150px]"><i class="fas fa-link mr-1"></i>Link</a>`).join('');
+            document.getElementById('memoLinks').innerHTML = urls.map(url => `<a href="${url}" target="_blank" class="bg-sketch-water text-white px-3 py-1 rounded-full text-base font-bold truncate max-w-[150px]"><i class="fas fa-link mr-1"></i>Link</a>`).join('');
         }
 
         function compressImg(input, type, key) {
