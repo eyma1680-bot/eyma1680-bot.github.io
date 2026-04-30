@@ -35,8 +35,8 @@
         input[type="checkbox"] { appearance: none; width: 18px; height: 18px; border: 2px solid #4A443F; border-radius: 4px; cursor: pointer; position: relative; }
         input[type="checkbox"]:checked { background-color: #8EA66E; }
         input[type="checkbox"]:checked::after { content: "✓"; position: absolute; color: white; font-size: 14px; left: 2px; top: -3px; }
-        .sortable-ghost-hide { opacity: 0 !important; }
-        .sortable-drag-hide { opacity: 1 !important; box-shadow: 4px 4px 0px #4A443F !important; }
+        .sortable-ghost-hide { opacity: 0 !important; visibility: hidden !important; }
+        .sortable-fallback-show { opacity: 1 !important; box-shadow: 4px 4px 0px #4A443F !important; transform: scale(1) !important; }
     </style>
 </head>
 <body class="pb-24">
@@ -267,8 +267,8 @@
             document.getElementById('memoInput').value = localStorage.getItem('tripMemo') || '';
             updateMemo();
 
-            Sortable.create(document.getElementById('souvenirList'), { animation: 0, delay: 500, delayOnTouchOnly: true, forceFallback: true, fallbackTolerance: 5, ghostClass: 'sortable-ghost-hide', dragClass: 'sortable-drag-hide', onEnd: saveSouvenirOrder });
-            Sortable.create(document.getElementById('expenseList'), { animation: 0, delay: 500, delayOnTouchOnly: true, forceFallback: true, fallbackTolerance: 5, ghostClass: 'sortable-ghost-hide', dragClass: 'sortable-drag-hide', onEnd: saveExpenseOrder });
+            Sortable.create(document.getElementById('souvenirList'), { animation: 0, delay: 500, delayOnTouchOnly: true, forceFallback: true, fallbackTolerance: 5, ghostClass: 'sortable-ghost-hide', fallbackClass: 'sortable-fallback-show', onEnd: saveSouvenirOrder });
+            Sortable.create(document.getElementById('expenseList'), { animation: 0, delay: 500, delayOnTouchOnly: true, forceFallback: true, fallbackTolerance: 5, ghostClass: 'sortable-ghost-hide', fallbackClass: 'sortable-fallback-show', onEnd: saveExpenseOrder });
         };
 
         // --- 同步功能 (Export/Import) ---
