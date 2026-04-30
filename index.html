@@ -28,7 +28,8 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .sketch-card { border: 2px solid #4A443F; box-shadow: 4px 4px 0px #4A443F; background: white; border-radius: 12px; }
+        .sketch-card { border: 2px solid #4A443F; box-shadow: 3px 3px 0px #4A443F; background: white; border-radius: 12px; }
+        .tab-content { contain: layout; }
         .nav-item.active { color: #8EA66E; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         input[type="checkbox"] { appearance: none; width: 18px; height: 18px; border: 2px solid #4A443F; border-radius: 4px; cursor: pointer; position: relative; }
@@ -46,7 +47,7 @@
         <div id="dayIndicator" class="bg-sketch-accent text-white px-3 py-1 rounded-full text-base font-bold">Day 1</div>
     </header>
 
-    <main class="max-w-md mx-auto px-4 pl-4 pr-6 py-4">
+    <main class="max-w-md mx-auto px-4 pr-6 py-4" style="overflow-x:hidden;width:100%;box-sizing:border-box;">
         
         <!-- 1. 行程 (PLAN) -->
         <section id="plan" class="tab-content active">
@@ -147,7 +148,7 @@
                     </div>
                     <i class="fas fa-cloud-sun text-blue-400 text-2xl"></i>
                 </a>
-	
+		
 
                 <div class="sketch-card p-5 bg-red-50/50 border-red-200">
                     <h4 class="font-bold text-red-800 mb-3 text-base"><i class="fas fa-phone-alt mr-2"></i>緊急聯絡資訊</h4>
@@ -260,7 +261,7 @@
             document.getElementById('memoInput').value = localStorage.getItem('tripMemo') || '';
             updateMemo();
 
-            Sortable.create(document.getElementById('souvenirList'), { animation: 150, onEnd: saveSouvenirOrder });
+            Sortable.create(document.getElementById('souvenirList'), { animation: 150, delay: 500, delayOnTouchOnly: true, onEnd: saveSouvenirOrder });
             Sortable.create(document.getElementById('expenseList'), { animation: 150, handle: '.handle', onEnd: saveExpenseOrder });
         };
 
@@ -315,8 +316,11 @@
         function switchDay(d) {
             currentDay = d;
             document.querySelectorAll('.day-btn').forEach((btn, i) => {
-                btn.classList.toggle('bg-sketch-green', i+1 === d);
-                btn.classList.toggle('text-white', i+1 === d);
+                const active = i+1 === d;
+                btn.classList.toggle('bg-sketch-green', active);
+                btn.classList.toggle('text-white', active);
+                btn.classList.toggle('bg-white', !active);
+                btn.classList.toggle('shadow-md', active);
             });
             document.getElementById('dayIndicator').innerText = `Day ${d}`;
             renderPlan();
