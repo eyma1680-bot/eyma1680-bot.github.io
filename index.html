@@ -255,11 +255,12 @@
         const defaultSouvenirs = ["鳴門海帶", "鳴門金時地瓜", "葡萄饅頭", "橄欖製品", "小豆島手打素麵", "醬油豆", "今治毛巾", "少爺團子", "一六蛋糕捲", "母惠夢", "山田屋饅頭", "CHU CHU果凍", "炙饅頭", "烏龍麵", "奶油銅鑼燒", "Quattro起司蝦餅"];
 
 
-        // 自訂長按拖曳：clone跟手指完全對齊，無殘影
+        // 自訂長按拖曳：用 transform 移動，純座標判斷，無 reflow
         function setupLongPressDrag(listId, onEndCb) {
             const list = document.getElementById(listId);
             let pressTimer = null, dragging = false, clone = null, draggingEl = null;
-            let offsetX = 0, offsetY = 0;
+            let offsetX = 0, offsetY = 0, startX = 0, startY = 0;
+            let rafId = null, lastTX = 0, lastTY = 0;
 
             list.addEventListener('touchstart', function(e) {
                 const el = e.target.closest('#' + listId + ' > div');
@@ -268,52 +269,62 @@
                 const rect = el.getBoundingClientRect();
                 offsetX = touch.clientX - rect.left;
                 offsetY = touch.clientY - rect.top;
+                startX = touch.clientX;
+                startY = touch.clientY;
 
                 pressTimer = setTimeout(() => {
                     dragging = true;
                     draggingEl = el;
-
-                    // 建立 clone 貼在手指正下方
                     clone = el.cloneNode(true);
-                    clone.className = el.className + ' drag-floating';
+                    clone.classList.add('drag-floating');
                     clone.style.width = rect.width + 'px';
-                    clone.style.left = (touch.clientX - offsetX) + 'px';
-                    clone.style.top = (touch.clientY - offsetY) + 'px';
+                    clone.style.left = rect.left + 'px';
+                    clone.style.top = rect.top + 'px';
                     document.body.appendChild(clone);
-                    el.style.opacity = '0';
+                    el.style.visibility = 'hidden';
                     if (navigator.vibrate) navigator.vibrate(40);
                 }, 500);
             }, { passive: true });
 
             list.addEventListener('touchmove', function(e) {
-                if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+                if (pressTimer && (Math.abs(e.touches[0].clientX - startX) > 5 || Math.abs(e.touches[0].clientY - startY) > 5)) {
+                    clearTimeout(pressTimer); pressTimer = null;
+                }
                 if (!dragging || !clone) return;
                 e.preventDefault();
-                const touch = e.touches[0];
-                clone.style.left = (touch.clientX - offsetX) + 'px';
-                clone.style.top = (touch.clientY - offsetY) + 'px';
+                lastTX = e.touches[0].clientX;
+                lastTY = e.touches[0].clientY;
 
-                // 找出目前手指下方的兄弟元素來決定插入位置
-                clone.style.display = 'none';
-                const elBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-                clone.style.display = '';
-                const sibling = elBelow && elBelow.closest('#' + listId + ' > div');
-                if (sibling && sibling !== draggingEl) {
-                    const sibRect = sibling.getBoundingClientRect();
-                    if (touch.clientY < sibRect.top + sibRect.height / 2) {
-                        list.insertBefore(draggingEl, sibling);
-                    } else {
-                        list.insertBefore(draggingEl, sibling.nextSibling);
+                if (rafId) return;
+                rafId = requestAnimationFrame(() => {
+                    rafId = null;
+                    if (!clone) return;
+                    // 移動 clone
+                    clone.style.left = (lastTX - offsetX) + 'px';
+                    clone.style.top  = (lastTY - offsetY) + 'px';
+
+                    // 純座標比較：找出最近的兄弟換位
+                    const siblings = Array.from(list.children).filter(c => c !== draggingEl);
+                    for (const sib of siblings) {
+                        const r = sib.getBoundingClientRect();
+                        const mid = r.top + r.height / 2;
+                        if (lastTY < mid) {
+                            list.insertBefore(draggingEl, sib);
+                            break;
+                        } else if (sib === siblings[siblings.length - 1]) {
+                            list.appendChild(draggingEl);
+                        }
                     }
-                }
+                });
             }, { passive: false });
 
             const endDrag = function() {
                 if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+                if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
                 if (!dragging) return;
                 dragging = false;
                 if (clone) { clone.remove(); clone = null; }
-                if (draggingEl) { draggingEl.style.opacity = ''; draggingEl = null; }
+                if (draggingEl) { draggingEl.style.visibility = ''; draggingEl = null; }
                 onEndCb();
             };
             list.addEventListener('touchend', endDrag, { passive: true });
