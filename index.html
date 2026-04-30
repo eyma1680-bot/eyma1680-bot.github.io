@@ -95,7 +95,7 @@
                 </div>
                 <div class="flex items-center space-x-2 mb-4">
                     <input type="number" id="expAmt" placeholder="日幣金額" class="flex-1 p-2 border-b border-sketch-ink text-base">
-                    <label class="cursor-pointer bg-sketch-bg p-2 rounded border border-sketch-ink text-base">
+                    <label class="cursor-pointer bg-sketch-bg p-2 rounded border border-sketch-ink text-base flex-shrink-0">
                         <i class="fas fa-camera"></i>
                         <input type="file" accept="image/*" class="hidden" onchange="compressImg(this, 'expense_temp')">
                     </label>
@@ -123,7 +123,7 @@
                 <div id="checkListItems" class="space-y-3 mb-6"></div>
                 <div class="flex space-x-2">
                     <input type="text" id="newCheckItem" placeholder="新增物品..." class="flex-1 p-2 border-b border-sketch-ink bg-transparent text-base focus:outline-none">
-                    <button onclick="addCheckItem()" class="bg-sketch-green text-white px-4 py-2 rounded-lg font-bold">+</button>
+                    <button onclick="addCheckItem()" class="bg-sketch-green text-white px-4 py-2 rounded-lg font-bold flex-shrink-0">+</button>
                 </div>
             </div>
 
@@ -419,11 +419,21 @@
         function renderCheckList() {
             const list = JSON.parse(localStorage.getItem('myChecklist'));
             document.getElementById('checkListItems').innerHTML = list.map((item, i) => `
-                <label class="flex items-center space-x-3 cursor-pointer">
-                    <input type="checkbox" onchange="toggleCheck(${i})" ${item.done?'checked':''}>
-                    <span class="text-base ${item.done?'line-through opacity-30':''}">${item.text}</span>
-                </label>
+                <div class="flex items-center space-x-2">
+                    <label class="flex items-center space-x-3 cursor-pointer flex-1 min-w-0">
+                        <input type="checkbox" onchange="toggleCheck(${i})" ${item.done?'checked':''} class="flex-shrink-0">
+                        <span class="text-base ${item.done?'line-through opacity-30':''} truncate">${item.text}</span>
+                    </label>
+                    <button onclick="deleteCheckItem(${i})" class="text-gray-300 active:text-red-400 flex-shrink-0 px-1"><i class="fas fa-times"></i></button>
+                </div>
             `).join('');
+        }
+
+        function deleteCheckItem(i) {
+            let list = JSON.parse(localStorage.getItem('myChecklist'));
+            list.splice(i, 1);
+            localStorage.setItem('myChecklist', JSON.stringify(list));
+            renderCheckList();
         }
 
         function toggleCheck(i) {
