@@ -234,7 +234,7 @@
     <!-- Image zoom modal -->
     <div id="imgModal" class="hidden fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4" style="touch-action:none;overflow:hidden">
         <img id="imgModalSrc" src="" class="rounded-xl object-contain shadow-2xl" style="max-width:100%;max-height:100%;transform-origin:center center;transition:transform 0.1s ease">
-        <button onclick="closeImgModal()" class="absolute top-4 right-4 text-white text-2xl bg-black/40 w-9 h-9 rounded-full flex items-center justify-center z-10"><i class="fas fa-times"></i></button>
+        <button id="imgModalCloseBtn" class="absolute top-4 right-4 text-white text-2xl bg-black/40 w-9 h-9 rounded-full flex items-center justify-center z-10" style="touch-action:manipulation"><i class="fas fa-times"></i></button>
     </div>
 
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around py-3 z-50 shadow-lg">
@@ -593,7 +593,7 @@
                 <div class="sketch-card p-3 flex items-center space-x-3 bg-white" data-id="${name}">
                     <div class="relative w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden">
                         ${imgSrc
-                            ? `<img src="${imgSrc}" onclick="showImgModal('${imgSrc}')" class="w-full h-full object-cover cursor-zoom-in">`
+                            ? `<img src="${imgSrc}" onclick="showImgModal(this.dataset.src)" data-src="${imgSrc.replace(/"/g,'&quot;')}" class="w-full h-full object-cover cursor-zoom-in">`
                             : `<div class="w-full h-full flex items-center justify-center text-2xl" style="background:${iconBg}22">${icon}</div>`
                         }
                         <label class="absolute bottom-0 right-0 bg-white/90 p-0.5 cursor-pointer rounded-tl-md">
@@ -737,12 +737,19 @@
             document.addEventListener('DOMContentLoaded', () => {
                 const modal = document.getElementById('imgModal');
                 const img = getImg();
+                const closeBtn = document.getElementById('imgModalCloseBtn');
+
+                // Wire up close button for both click and touchend
+                closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closeImgModal(); });
+                closeBtn.addEventListener('touchend', (e) => { e.stopPropagation(); e.preventDefault(); closeImgModal(); }, {passive: false});
 
                 // Tap backdrop to close (not the image)
                 modal.addEventListener('click', (e) => { if (e.target === modal) closeImgModal(); });
 
                 // Pinch-to-zoom
                 modal.addEventListener('touchstart', (e) => {
+                    // Don't intercept close button touches
+                    if (e.target === closeBtn || closeBtn.contains(e.target)) return;
                     for (const t of e.changedTouches) pointers.push({id: t.identifier, x: t.clientX, y: t.clientY});
                     if (pointers.length === 2) {
                         modalLastDist = Math.hypot(pointers[0].x - pointers[1].x, pointers[0].y - pointers[1].y);
@@ -818,7 +825,7 @@
             const imgs = JSON.parse(localStorage.getItem('memoImgs') || '[]');
             document.getElementById('memoImgGrid').innerHTML = imgs.map((src, i) => `
                 <div class="relative">
-                    <img src="${src}" onclick="showImgModal('${src}')" class="w-full aspect-square object-cover rounded-lg border-2 border-sketch-ink cursor-zoom-in">
+                    <img src="${src}" onclick="showImgModal(this.dataset.src)" data-src="${src.replace(/"/g,'&quot;')}" class="w-full aspect-square object-cover rounded-lg border-2 border-sketch-ink cursor-zoom-in">
                     <button onclick="deleteMemoImg(${i})" class="absolute top-0.5 right-0.5 bg-white/90 rounded-full w-5 h-5 text-xs text-red-400 flex items-center justify-center leading-none"><i class="fas fa-times"></i></button>
                 </div>
             `).join('');
@@ -838,9 +845,13 @@
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
-                        canvas.width = 400; canvas.height = img.height * (400 / img.width);
+                        // Use higher resolution for shop/guide images so zoom modal looks sharp
+                        const maxW = (type === 'expense_temp') ? 400 : 1200;
+                        const quality = (type === 'expense_temp') ? 0.6 : 0.85;
+                        canvas.width = Math.min(img.width, maxW);
+                        canvas.height = img.height * (canvas.width / img.width);
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        const b64 = canvas.toDataURL('image/jpeg', 0.6);
+                        const b64 = canvas.toDataURL('image/jpeg', quality);
                         if(type === 'expense_temp') { tempExpImg = b64; document.querySelector('#expensePreview img').src = b64; document.getElementById('expensePreview').classList.remove('hidden'); }
                         else if(type === 'guide') { const imgs = JSON.parse(localStorage.getItem('customImgs') || '{}'); imgs[key] = b64; localStorage.setItem('customImgs', JSON.stringify(imgs)); renderPlan(); }
                         else if(type === 'shop') { const imgs = JSON.parse(localStorage.getItem('shopImgs') || '{}'); imgs[key] = b64; localStorage.setItem('shopImgs', JSON.stringify(imgs)); renderSouvenirs(); }
