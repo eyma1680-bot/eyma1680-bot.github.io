@@ -838,6 +838,8 @@
         })();
         function addMemoImg(input) {
             if (!input.files || !input.files[0]) return;
+            const imgs = JSON.parse(localStorage.getItem('memoImgs') || '[]');
+            if (imgs.length >= 10) { alert('最多上傳 10 張圖片'); return; }
             const file = input.files[0];
             input.value = '';
             const reader = new FileReader();
@@ -847,15 +849,19 @@
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-                    const maxW = 2400;
+                    const maxW = 800;
                     canvas.width = Math.min(img.width, maxW);
                     canvas.height = img.height * (canvas.width / img.width);
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    const b64 = canvas.toDataURL('image/jpeg', 0.85);
-                    const imgs = JSON.parse(localStorage.getItem('memoImgs') || '[]');
-                    imgs.push(b64);
-                    localStorage.setItem('memoImgs', JSON.stringify(imgs));
-                    renderMemoImgs();
+                    const b64 = canvas.toDataURL('image/jpeg', 0.75);
+                    const imgs2 = JSON.parse(localStorage.getItem('memoImgs') || '[]');
+                    imgs2.push(b64);
+                    try {
+                        localStorage.setItem('memoImgs', JSON.stringify(imgs2));
+                        renderMemoImgs();
+                    } catch(err) {
+                        alert('圖片太大無法儲存，請換一張較小的圖片');
+                    }
                 };
             };
             reader.readAsDataURL(file);
