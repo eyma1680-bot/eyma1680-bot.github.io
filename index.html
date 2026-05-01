@@ -67,10 +67,27 @@
 
         <!-- 2. 購物 (SOUVENIR) -->
         <section id="souvenir" class="tab-content">
-            <h2 class="text-xl font-bold mb-6 italic border-l-4 border-sketch-accent pl-3">Shopping List</h2>
-            <div class="flex space-x-2 mb-6">
-                <input type="text" id="newShopItem" placeholder="新增伴手禮..." class="flex-1 p-2 border-b-2 border-sketch-ink bg-transparent text-base focus:outline-none">
-                <button onclick="addShopItem()" class="bg-sketch-earth text-white px-4 py-2 rounded-lg font-bold shadow-sm">+</button>
+            <h2 class="text-xl font-bold mb-4 italic border-l-4 border-sketch-accent pl-3">Shopping List</h2>
+            <!-- 分類 tabs -->
+            <div class="flex space-x-2 overflow-x-auto no-scrollbar mb-4 py-1">
+                <button onclick="switchShopTab('全部', this)" id="shopTab全部" class="shop-tab shrink-0 px-3 py-1.5 rounded-full border-2 border-sketch-ink font-bold text-base bg-sketch-accent text-white">全部</button>
+                <button onclick="switchShopTab('美食', this)" id="shopTab美食" class="shop-tab shrink-0 px-3 py-1.5 rounded-full border-2 border-sketch-ink font-bold text-base bg-white">🍡 美食</button>
+                <button onclick="switchShopTab('藥妝', this)" id="shopTab藥妝" class="shop-tab shrink-0 px-3 py-1.5 rounded-full border-2 border-sketch-ink font-bold text-base bg-white">💊 藥妝</button>
+                <button onclick="switchShopTab('電器', this)" id="shopTab電器" class="shop-tab shrink-0 px-3 py-1.5 rounded-full border-2 border-sketch-ink font-bold text-base bg-white">🔌 電器</button>
+                <button onclick="switchShopTab('文具', this)" id="shopTab文具" class="shop-tab shrink-0 px-3 py-1.5 rounded-full border-2 border-sketch-ink font-bold text-base bg-white">✏️ 文具</button>
+                <button onclick="switchShopTab('其他', this)" id="shopTab其他" class="shop-tab shrink-0 px-3 py-1.5 rounded-full border-2 border-sketch-ink font-bold text-base bg-white">📦 其他</button>
+            </div>
+            <!-- 新增列 -->
+            <div class="flex space-x-2 mb-5">
+                <input type="text" id="newShopItem" placeholder="新增品項..." class="flex-1 min-w-0 p-2 border-b-2 border-sketch-ink bg-transparent text-base focus:outline-none">
+                <select id="newShopCategory" class="p-2 border-b-2 border-sketch-ink bg-transparent text-base focus:outline-none flex-shrink-0">
+                    <option value="美食">美食</option>
+                    <option value="藥妝">藥妝</option>
+                    <option value="電器">電器</option>
+                    <option value="文具">文具</option>
+                    <option value="其他">其他</option>
+                </select>
+                <button onclick="addShopItem()" class="bg-sketch-earth text-white px-4 py-2 rounded-lg font-bold shadow-sm flex-shrink-0">+</button>
             </div>
             <div class="space-y-3" id="souvenirList"></div>
         </section>
@@ -134,8 +151,16 @@
 
             <div class="sketch-card p-5">
                 <h3 class="font-bold mb-3 text-base italic">個人備忘錄 Memo</h3>
-                <textarea id="memoInput" oninput="updateMemo()" class="w-full h-32 bg-sketch-bg border-none p-3 rounded-lg text-base focus:ring-0 mb-4" placeholder="輸入文字，網址會自動轉連結..."></textarea>
-                <div id="memoLinks" class="flex flex-wrap gap-2"></div>
+                <textarea id="memoInput" oninput="updateMemo()" class="w-full h-32 bg-sketch-bg border-none p-3 rounded-lg text-base focus:ring-0 mb-3" placeholder="輸入文字，網址會自動轉連結..."></textarea>
+                <div id="memoLinks" class="flex flex-wrap gap-2 mb-4"></div>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-base font-bold opacity-60">附圖</span>
+                    <label class="cursor-pointer bg-sketch-bg px-3 py-1.5 rounded-lg border-2 border-sketch-ink text-base font-bold flex items-center space-x-1">
+                        <i class="fas fa-camera"></i><span>上傳圖片</span>
+                        <input type="file" accept="image/*" class="hidden" onchange="addMemoImg(this)">
+                    </label>
+                </div>
+                <div id="memoImgGrid" class="grid grid-cols-3 gap-2"></div>
             </div>
         </section>
 
@@ -169,12 +194,38 @@
                 </div>
 
                 <div class="sketch-card p-5 border-sketch-green/30 text-base">
-                    <h4 class="font-bold text-sketch-green mb-3"><i class="fas fa-plane-departure mr-2"></i>行李與航安</h4>
+                    <h4 class="font-bold text-sketch-green mb-3"><i class="fas fa-weight-hanging mr-2"></i>行李限重</h4>
                     <ul class="space-y-1 opacity-80">
                         <li>● 託運行李：<span class="font-bold">23 kg</span></li>
                         <li>● 手提行李：<span class="font-bold">7 kg</span></li>
-                        <li class="text-red-600 font-bold">● 禁止攜帶肉類、新鮮蔬果回國</li>
                     </ul>
+                </div>
+
+                <div class="sketch-card p-5 text-base">
+                    <h4 class="font-bold text-sketch-ink mb-4"><i class="fas fa-exclamation-circle mr-2 text-sketch-accent"></i>行李注意事項</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="font-bold text-sketch-green mb-1">⚡ 電子產品與充電設備</p>
+                            <ul class="space-y-1 opacity-80">
+                                <li>● 行動電源和備用鋰電池只能放<span class="font-bold">隨身行李</span>，不能放託運行李</li>
+                                <li>● 手機充電線可放託運行李，也可放隨身行李</li>
+                                <li>● 飛機上<span class="font-bold text-red-500">不能</span>使用行動電源充電</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p class="font-bold text-sketch-water mb-1">💧 液體類物品</p>
+                            <ul class="space-y-1 opacity-80">
+                                <li>● 100ml 以下液體可放隨身行李</li>
+                                <li>● 超過 100ml 液體需放<span class="font-bold">託運行李</span></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p class="font-bold text-sketch-accent mb-1">🍖 食品攜帶限制</p>
+                            <ul class="space-y-1 opacity-80">
+                                <li class="text-red-600 font-bold">● 禁止攜帶肉類和新鮮蔬果回國</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -293,7 +344,25 @@
         // --- 全域變數與儲存邏輯 ---
         let currentDay = 1;
         let tempExpImg = "";
-        const defaultSouvenirs = ["鳴門海帶", "鳴門金時地瓜", "葡萄饅頭", "橄欖製品", "小豆島手打素麵", "醬油豆", "今治毛巾", "少爺團子", "一六蛋糕捲", "母惠夢", "山田屋饅頭", "CHU CHU果凍", "炙饅頭", "烏龍麵", "奶油銅鑼燒", "Quattro起司蝦餅"];
+        const defaultSouvenirs = [
+            {name:"鳴門海帶", category:"美食", checked:false},
+            {name:"鳴門金時地瓜", category:"美食", checked:false},
+            {name:"葡萄饅頭", category:"美食", checked:false},
+            {name:"橄欖製品", category:"美食", checked:false},
+            {name:"小豆島手打素麵", category:"美食", checked:false},
+            {name:"醬油豆", category:"美食", checked:false},
+            {name:"今治毛巾", category:"其他", checked:false},
+            {name:"少爺團子", category:"美食", checked:false},
+            {name:"一六蛋糕捲", category:"美食", checked:false},
+            {name:"母惠夢", category:"美食", checked:false},
+            {name:"山田屋饅頭", category:"美食", checked:false},
+            {name:"CHU CHU果凍", category:"美食", checked:false},
+            {name:"炙饅頭", category:"美食", checked:false},
+            {name:"烏龍麵", category:"美食", checked:false},
+            {name:"奶油銅鑼燒", category:"美食", checked:false},
+            {name:"Quattro起司蝦餅", category:"美食", checked:false}
+        ];
+        let currentShopTab = '全部';
 
 
         // 自訂長按拖曳：用 transform 移動，純座標判斷，無 reflow
@@ -373,7 +442,20 @@
         }
 
         window.onload = () => {
-            if(!localStorage.getItem('mySouvenirs')) localStorage.setItem('mySouvenirs', JSON.stringify(defaultSouvenirs));
+            // 初始化 / 舊資料遷移：字串陣列 → 物件陣列
+            const rawSouvenirs = localStorage.getItem('mySouvenirs');
+            if (!rawSouvenirs) {
+                localStorage.setItem('mySouvenirs', JSON.stringify(defaultSouvenirs));
+            } else {
+                try {
+                    const parsed = JSON.parse(rawSouvenirs);
+                    if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === 'string') {
+                        const catMap = Object.fromEntries(defaultSouvenirs.map(x => [x.name, x.category]));
+                        const migrated = parsed.map(name => ({name, category: catMap[name] || '其他', checked: false}));
+                        localStorage.setItem('mySouvenirs', JSON.stringify(migrated));
+                    }
+                } catch(e) {}
+            }
             if(!localStorage.getItem('myChecklist')) {
                 const initList = ["護照", "網卡/Wifi", "日幣", "行動電源", "換洗衣物"].map(t => ({text: t, done: false}));
                 localStorage.setItem('myChecklist', JSON.stringify(initList));
@@ -384,6 +466,7 @@
             renderCheckList();
             document.getElementById('memoInput').value = localStorage.getItem('tripMemo') || '';
             updateMemo();
+            renderMemoImgs();
 
             setupLongPressDrag('souvenirList', saveSouvenirOrder);
             setupLongPressDrag('expenseList', saveExpenseOrder);
@@ -478,20 +561,62 @@
             container.innerHTML = html;
         }
 
+        const CAT_ICONS = {'美食':'🍱','藥妝':'💊','電器':'🔌','文具':'✏️','其他':'📦'};
+        const CAT_COLORS = {'美食':'#E89D8E','藥妝':'#A5C4D4','電器':'#BC9F80','文具':'#8EA66E','其他':'#C4B5A0'};
         function renderSouvenirs() {
             const list = JSON.parse(localStorage.getItem('mySouvenirs'));
             const container = document.getElementById('souvenirList');
             const imgs = JSON.parse(localStorage.getItem('shopImgs') || '{}');
-            container.innerHTML = list.map(name => `
-                <div class="sketch-card p-3 flex items-center space-x-4 bg-white" data-id="${name}">
-                    <div class="relative w-12 h-12 bg-sketch-bg flex-shrink-0 rounded-lg overflow-hidden border">
-                        <img src="${STATIC_IMGS['shop_'+name] || imgs['shop_'+name] || ''}" class="w-full h-full object-cover">
+            const filtered = currentShopTab === '全部' ? list : list.filter(item => item.category === currentShopTab);
+            const catOptions = ['美食','藥妝','電器','文具','其他'].map(c => `<option value="${c}">${c}</option>`).join('');
+            container.innerHTML = filtered.map((item) => {
+                const name = item.name;
+                const globalIdx = list.findIndex(x => x.name === name && x.category === item.category);
+                const imgSrc = STATIC_IMGS['shop_'+name] || imgs['shop_'+name] || '';
+                const icon = CAT_ICONS[item.category] || '📦';
+                const iconBg = CAT_COLORS[item.category] || '#C4B5A0';
+                return `
+                <div class="sketch-card p-3 flex items-center space-x-3 bg-white" data-id="${name}">
+                    <div class="relative w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden border-2 border-sketch-ink">
+                        ${imgSrc
+                            ? `<img src="${imgSrc}" class="w-full h-full object-cover">`
+                            : `<div class="w-full h-full flex items-center justify-center text-2xl" style="background:${iconBg}22">${icon}</div>`
+                        }
                         <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="compressImg(this, 'shop', 'shop_${name}')">
                     </div>
-                    <h4 class="font-bold text-base flex-1">${name}</h4>
-                    <button onclick="deleteShopItem('${name}')" class="text-gray-200"><i class="fas fa-times"></i></button>
-                </div>
-            `).join('');
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-bold text-base truncate">${name}</h4>
+                        <select onchange="changeShopCategory(${globalIdx}, this.value)" class="text-xs font-bold rounded-full px-2 py-0.5 border-0 mt-0.5 cursor-pointer" style="background:${iconBg}33;color:${iconBg}">
+                            ${['美食','藥妝','電器','文具','其他'].map(c=>`<option value="${c}" ${c===item.category?'selected':''}>${CAT_ICONS[c]} ${c}</option>`).join('')}
+                        </select>
+                    </div>
+                    <label class="flex-shrink-0 cursor-pointer">
+                        <input type="checkbox" onchange="toggleShopCheck(${globalIdx})" ${item.checked ? 'checked' : ''}>
+                    </label>
+                    <button onclick="deleteShopItem(${globalIdx})" class="text-gray-200 flex-shrink-0 ml-1"><i class="fas fa-times"></i></button>
+                </div>`;
+            }).join('');
+        }
+        function switchShopTab(tab, btn) {
+            currentShopTab = tab;
+            document.querySelectorAll('.shop-tab').forEach(b => {
+                b.classList.remove('bg-sketch-accent', 'text-white');
+                b.classList.add('bg-white');
+            });
+            btn.classList.remove('bg-white');
+            btn.classList.add('bg-sketch-accent', 'text-white');
+            renderSouvenirs();
+        }
+        function toggleShopCheck(idx) {
+            const list = JSON.parse(localStorage.getItem('mySouvenirs'));
+            list[idx].checked = !list[idx].checked;
+            localStorage.setItem('mySouvenirs', JSON.stringify(list));
+        }
+        function changeShopCategory(idx, newCat) {
+            const list = JSON.parse(localStorage.getItem('mySouvenirs'));
+            list[idx].category = newCat;
+            localStorage.setItem('mySouvenirs', JSON.stringify(list));
+            renderSouvenirs();
         }
 
         // 其他功能 (記帳、清單、壓縮) 與先前版本邏輯相同
@@ -567,6 +692,41 @@
             document.getElementById('memoLinks').innerHTML = urls.map(url => `<a href="${url}" target="_blank" class="bg-sketch-water text-white px-3 py-1 rounded-full text-base font-bold truncate max-w-[150px]"><i class="fas fa-link mr-1"></i>Link</a>`).join('');
         }
 
+        function addMemoImg(input) {
+            if (!input.files || !input.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = 400; canvas.height = img.height * (400 / img.width);
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const b64 = canvas.toDataURL('image/jpeg', 0.6);
+                    const imgs = JSON.parse(localStorage.getItem('memoImgs') || '[]');
+                    imgs.push(b64);
+                    localStorage.setItem('memoImgs', JSON.stringify(imgs));
+                    renderMemoImgs();
+                };
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+        function renderMemoImgs() {
+            const imgs = JSON.parse(localStorage.getItem('memoImgs') || '[]');
+            document.getElementById('memoImgGrid').innerHTML = imgs.map((src, i) => `
+                <div class="relative">
+                    <img src="${src}" class="w-full aspect-square object-cover rounded-lg border-2 border-sketch-ink">
+                    <button onclick="deleteMemoImg(${i})" class="absolute top-0.5 right-0.5 bg-white/90 rounded-full w-5 h-5 text-xs text-red-400 flex items-center justify-center leading-none"><i class="fas fa-times"></i></button>
+                </div>
+            `).join('');
+        }
+        function deleteMemoImg(i) {
+            const imgs = JSON.parse(localStorage.getItem('memoImgs') || '[]');
+            imgs.splice(i, 1);
+            localStorage.setItem('memoImgs', JSON.stringify(imgs));
+            renderMemoImgs();
+        }
         function compressImg(input, type, key) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -597,17 +757,25 @@
         }
         function addShopItem() {
             const val = document.getElementById('newShopItem').value; if(!val) return;
+            const cat = document.getElementById('newShopCategory').value;
             const list = JSON.parse(localStorage.getItem('mySouvenirs'));
-            list.push(val); localStorage.setItem('mySouvenirs', JSON.stringify(list));
+            list.push({name: val, category: cat, checked: false});
+            localStorage.setItem('mySouvenirs', JSON.stringify(list));
             document.getElementById('newShopItem').value = ""; renderSouvenirs();
         }
-        function deleteShopItem(n) {
-            const list = JSON.parse(localStorage.getItem('mySouvenirs')).filter(i => i !== n);
+        function deleteShopItem(idx) {
+            const list = JSON.parse(localStorage.getItem('mySouvenirs'));
+            list.splice(idx, 1);
             localStorage.setItem('mySouvenirs', JSON.stringify(list)); renderSouvenirs();
         }
         function saveSouvenirOrder() {
-            const items = Array.from(document.querySelectorAll('#souvenirList > div')).map(el => el.getAttribute('data-id'));
-            localStorage.setItem('mySouvenirs', JSON.stringify(items));
+            const visibleNames = Array.from(document.querySelectorAll('#souvenirList > div')).map(el => el.getAttribute('data-id'));
+            const list = JSON.parse(localStorage.getItem('mySouvenirs'));
+            // reorder only visible items, keep hidden ones in place
+            const visible = list.filter(item => currentShopTab === '全部' || item.category === currentShopTab);
+            const hidden = list.filter(item => !(currentShopTab === '全部' || item.category === currentShopTab));
+            const reorderedVisible = visibleNames.map(n => visible.find(x => x.name === n)).filter(Boolean);
+            localStorage.setItem('mySouvenirs', JSON.stringify([...reorderedVisible, ...hidden]));
         }
         function saveExpenseOrder() {
             const ids = Array.from(document.querySelectorAll('#expenseList > div')).map(el => el.getAttribute('data-id'));
