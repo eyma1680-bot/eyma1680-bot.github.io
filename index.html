@@ -676,14 +676,25 @@
             const filter = document.getElementById('filterDate').value;
             const filtered = filter === 'ALL' ? list : list.filter(e => e.date === filter);
             document.getElementById('expenseList').innerHTML = filtered.map(e => `
-                <div class="bg-white p-3 rounded-lg border border-sketch-ink flex items-center handle" data-id="${e.id}">
-                    ${e.img ? `<img src="${e.img}" onclick="showImgModal(this.src)" class="w-10 h-10 object-cover rounded mr-3 cursor-zoom-in">` : `<div class="w-10 h-10 bg-sketch-bg rounded mr-3"></div>`}
-                    <div class="flex-1 text-base">
-                        <p class="font-bold text-sketch-accent">${e.date}</p>
-                        <p class="font-bold text-sketch-ink">${e.name}</p>
+                <div class="sketch-card flex items-stretch bg-white overflow-hidden" style="height:72px" data-id="${e.id}">
+                    <div class="relative w-16 flex-shrink-0">
+                        ${e.img
+                            ? `<img src="${e.img}" onclick="showImgModal(this.src)" class="w-full h-full object-cover cursor-zoom-in">`
+                            : `<div class="w-full h-full flex items-center justify-center text-2xl" style="background:#f5f0e833">🧾</div>`
+                        }
+                        <label class="absolute bottom-0 right-0 bg-white/90 p-0.5 cursor-pointer rounded-tl-md">
+                            <i class="fas fa-camera text-sketch-ink" style="font-size:9px"></i>
+                            <input type="file" accept="image/*" class="hidden" onchange="compressImg(this, 'expense_replace', '${e.id}')">
+                        </label>
                     </div>
-                    <div class="text-right mr-3"><p class="font-bold text-sketch-green text-base">¥${e.amt}</p></div>
-                    <button onclick="deleteExpense(${e.id})" class="text-gray-200"><i class="fas fa-trash"></i></button>
+                    <div class="flex items-center flex-1 min-w-0 p-3 space-x-2">
+                        <div class="flex-1 min-w-0">
+                            <p class="font-bold text-sketch-accent text-xs">${e.date}</p>
+                            <p class="font-bold text-sketch-ink text-base truncate">${e.name}</p>
+                        </div>
+                        <p class="font-bold text-sketch-green text-base flex-shrink-0">¥${e.amt}</p>
+                        <button onclick="deleteExpense(${e.id})" class="text-gray-200 flex-shrink-0"><i class="fas fa-trash"></i></button>
+                    </div>
                 </div>
             `).join('');
         }
@@ -865,8 +876,8 @@
                         const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
                         // Use higher resolution for shop/guide images so zoom modal looks sharp
-                        const maxW = (type === 'expense_temp') ? 400 : 2400;
-                        const quality = (type === 'expense_temp') ? 0.6 : 0.92;
+                        const maxW = (type === 'expense_temp' || type === 'expense_replace') ? 1600 : 2400;
+                        const quality = (type === 'expense_temp' || type === 'expense_replace') ? 0.88 : 0.92;
                         canvas.width = Math.min(img.width, maxW);
                         canvas.height = img.height * (canvas.width / img.width);
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -874,6 +885,7 @@
                         if(type === 'expense_temp') { tempExpImg = b64; document.querySelector('#expensePreview img').src = b64; document.getElementById('expensePreview').classList.remove('hidden'); }
                         else if(type === 'guide') { const imgs = JSON.parse(localStorage.getItem('customImgs') || '{}'); imgs[key] = b64; localStorage.setItem('customImgs', JSON.stringify(imgs)); renderPlan(); }
                         else if(type === 'shop') { const imgs = JSON.parse(localStorage.getItem('shopImgs') || '{}'); imgs[key] = b64; localStorage.setItem('shopImgs', JSON.stringify(imgs)); renderSouvenirs(); }
+                        else if(type === 'expense_replace') { const list = JSON.parse(localStorage.getItem('tripExpenses') || '[]'); const idx = list.findIndex(e => String(e.id) === String(key)); if(idx > -1) { list[idx].img = b64; localStorage.setItem('tripExpenses', JSON.stringify(list)); renderExpenses(); } }
                     };
                 };
                 reader.readAsDataURL(input.files[0]);
