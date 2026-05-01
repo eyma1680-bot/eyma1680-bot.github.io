@@ -665,7 +665,19 @@
             if(!name || !amt) return;
             const list = JSON.parse(localStorage.getItem('tripExpenses') || '[]');
             list.unshift({ id: Date.now(), date, name, amt, img: tempExpImg });
-            localStorage.setItem('tripExpenses', JSON.stringify(list));
+            try {
+                localStorage.setItem('tripExpenses', JSON.stringify(list));
+            } catch(err) {
+                // Fallback: strip image and try again
+                list[0].img = '';
+                try {
+                    localStorage.setItem('tripExpenses', JSON.stringify(list));
+                    if (tempExpImg) alert('儲存空間不足，已移除圖片並儲存帳目。');
+                } catch(err2) {
+                    alert('儲存失敗，請刪除部分舊帳目後再試。');
+                    return;
+                }
+            }
             document.getElementById('expName').value = "";
             document.getElementById('expAmt').value = "";
             document.getElementById('expensePreview').classList.add('hidden');
@@ -892,9 +904,9 @@
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
-                        // Use higher resolution for shop/guide images so zoom modal looks sharp
-                        const maxW = (type === 'expense_temp' || type === 'expense_replace') ? 1600 : 2400;
-                        const quality = (type === 'expense_temp' || type === 'expense_replace') ? 0.88 : 0.92;
+                        // Expense images are thumbnails (64×72px), keep small to avoid localStorage quota issues
+                        const maxW = (type === 'expense_temp' || type === 'expense_replace') ? 600 : 2400;
+                        const quality = (type === 'expense_temp' || type === 'expense_replace') ? 0.70 : 0.92;
                         canvas.width = Math.min(img.width, maxW);
                         canvas.height = img.height * (canvas.width / img.width);
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -902,7 +914,7 @@
                         if(type === 'expense_temp') { tempExpImg = b64; document.querySelector('#expensePreview img').src = b64; document.getElementById('expensePreview').classList.remove('hidden'); }
                         else if(type === 'guide') { const imgs = JSON.parse(localStorage.getItem('customImgs') || '{}'); imgs[key] = b64; localStorage.setItem('customImgs', JSON.stringify(imgs)); renderPlan(); }
                         else if(type === 'shop') { const imgs = JSON.parse(localStorage.getItem('shopImgs') || '{}'); imgs[key] = b64; localStorage.setItem('shopImgs', JSON.stringify(imgs)); renderSouvenirs(); }
-                        else if(type === 'expense_replace') { const list = JSON.parse(localStorage.getItem('tripExpenses') || '[]'); const idx = list.findIndex(e => String(e.id) === String(key)); if(idx > -1) { list[idx].img = b64; localStorage.setItem('tripExpenses', JSON.stringify(list)); renderExpenses(); } }
+                        else if(type === 'expense_replace') { const list = JSON.parse(localStorage.getItem('tripExpenses') || '[]'); const idx = list.findIndex(e => String(e.id) === String(key)); if(idx > -1) { list[idx].img = b64; try { localStorage.setItem('tripExpenses', JSON.stringify(list)); } catch(err) { alert('儲存空間不足，無法更新圖片。請刪除部分舊帳目後再試。'); } renderExpenses(); } }
                     };
                 };
                 reader.readAsDataURL(file);
