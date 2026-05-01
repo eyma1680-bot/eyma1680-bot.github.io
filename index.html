@@ -677,7 +677,7 @@
             const filtered = filter === 'ALL' ? list : list.filter(e => e.date === filter);
             document.getElementById('expenseList').innerHTML = filtered.map(e => `
                 <div class="bg-white p-3 rounded-lg border border-sketch-ink flex items-center handle" data-id="${e.id}">
-                    ${e.img ? `<img src="${e.img}" class="w-10 h-10 object-cover rounded mr-3">` : `<div class="w-10 h-10 bg-sketch-bg rounded mr-3"></div>`}
+                    ${e.img ? `<img src="${e.img}" onclick="showImgModal(this.src)" class="w-10 h-10 object-cover rounded mr-3 cursor-zoom-in">` : `<div class="w-10 h-10 bg-sketch-bg rounded mr-3"></div>`}
                     <div class="flex-1 text-base">
                         <p class="font-bold text-sketch-accent">${e.date}</p>
                         <p class="font-bold text-sketch-ink">${e.name}</p>
