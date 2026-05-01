@@ -590,7 +590,7 @@
                 const icon = CAT_ICONS[item.category] || '📦';
                 const iconBg = CAT_COLORS[item.category] || '#C4B5A0';
                 return `
-                <div class="sketch-card flex items-stretch bg-white overflow-hidden" data-id="${name}">
+                <div class="sketch-card flex items-stretch bg-white overflow-hidden" style="height:72px" data-id="${name}">
                     <div class="relative w-16 flex-shrink-0">
                         ${imgSrc
                             ? `<img src="${imgSrc}" onclick="showImgModal(this.dataset.src)" data-src="${imgSrc.replace(/"/g,'&quot;')}" class="w-full h-full object-cover cursor-zoom-in">`
