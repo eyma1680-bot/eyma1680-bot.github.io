@@ -117,12 +117,7 @@
                 </div>
                 <div class="flex items-center space-x-2 mb-4">
                     <input type="number" id="expAmt" placeholder="日幣金額" class="flex-1 min-w-0 p-2 border-b border-sketch-ink text-base" onkeydown="if(event.key==='Enter'){saveExpense();}">
-                    <label class="cursor-pointer bg-sketch-bg p-2 rounded border border-sketch-ink text-base flex-shrink-0">
-                        <i class="fas fa-camera"></i>
-                        <input type="file" accept="image/*" class="hidden" onchange="compressImg(this, 'expense_temp')">
-                    </label>
                 </div>
-                <div id="expensePreview" class="hidden mb-4"><img src="" class="w-full h-32 object-cover rounded border"></div>
                 <button onclick="saveExpense()" class="w-full bg-sketch-ink text-white py-3 rounded-lg font-bold shadow-md active:scale-95 text-base">儲存帳目</button>
             </div>
 
@@ -367,7 +362,6 @@
 
         // --- 全域變數與儲存邏輯 ---
         let currentDay = 1;
-        let tempExpImg = "";
         const defaultSouvenirs = [
             {name:"鳴門海帶", category:"美食", checked:false},
             {name:"鳴門金時地瓜", category:"美食", checked:false},
@@ -664,29 +658,16 @@
             const amt = document.getElementById('expAmt').value;
             if(!name || !amt) return;
             const list = JSON.parse(localStorage.getItem('tripExpenses') || '[]');
-            list.unshift({ id: Date.now(), date, name, amt, img: tempExpImg });
+            list.unshift({ id: Date.now(), date, name, amt });
             try {
                 localStorage.setItem('tripExpenses', JSON.stringify(list));
             } catch(err) {
-                // Fallback: strip image and try again
-                list[0].img = '';
-                try {
-                    localStorage.setItem('tripExpenses', JSON.stringify(list));
-                    if (tempExpImg) alert('儲存空間不足，已移除圖片並儲存帳目。');
-                } catch(err2) {
-                    alert('儲存失敗，請刪除部分舊帳目後再試。');
-                    return;
-                }
+                alert('儲存失敗，請刪除部分舊帳目後再試。');
+                return;
             }
             document.getElementById('expName').value = "";
             document.getElementById('expAmt').value = "";
-            document.getElementById('expensePreview').classList.add('hidden');
-            // Reset file input so same image can be picked again next time
-            const fileInput = document.querySelector('#wallet input[type="file"][onchange*="expense_temp"]');
-            if (fileInput) fileInput.value = '';
-            tempExpImg = "";
             renderExpenses();
-            // Restore focus to name field for quick consecutive entry
             document.getElementById('expName').focus();
         }
 
@@ -695,25 +676,14 @@
             const filter = document.getElementById('filterDate').value;
             const filtered = filter === 'ALL' ? list : list.filter(e => e.date === filter);
             document.getElementById('expenseList').innerHTML = filtered.map(e => `
-                <div class="sketch-card flex items-stretch bg-white overflow-hidden" style="height:72px" data-id="${e.id}">
-                    <div class="relative w-16 flex-shrink-0">
-                        ${e.img
-                            ? `<img src="${e.img}" onclick="showImgModal(this.src)" class="w-full h-full object-cover cursor-zoom-in">`
-                            : `<div class="w-full h-full flex items-center justify-center text-2xl" style="background:#f5f0e833">🧾</div>`
-                        }
-                        <label class="absolute bottom-0 right-0 bg-white/90 p-0.5 cursor-pointer rounded-tl-md">
-                            <i class="fas fa-camera text-sketch-ink" style="font-size:9px"></i>
-                            <input type="file" accept="image/*" class="hidden" onchange="compressImg(this, 'expense_replace', '${e.id}')">
-                        </label>
+                <div class="sketch-card flex items-center bg-white overflow-hidden px-4 py-3 space-x-3" data-id="${e.id}">
+                    <div class="w-8 h-8 flex items-center justify-center text-xl flex-shrink-0">🧾</div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-bold text-sketch-accent text-xs">${e.date}</p>
+                        <p class="font-bold text-sketch-ink text-base truncate">${e.name}</p>
                     </div>
-                    <div class="flex items-center flex-1 min-w-0 p-3 space-x-2">
-                        <div class="flex-1 min-w-0">
-                            <p class="font-bold text-sketch-accent text-xs">${e.date}</p>
-                            <p class="font-bold text-sketch-ink text-base truncate">${e.name}</p>
-                        </div>
-                        <p class="font-bold text-sketch-green text-base flex-shrink-0">¥${e.amt}</p>
-                        <button onclick="deleteExpense(${e.id})" class="text-gray-200 flex-shrink-0"><i class="fas fa-trash"></i></button>
-                    </div>
+                    <p class="font-bold text-sketch-green text-base flex-shrink-0">¥${e.amt}</p>
+                    <button onclick="deleteExpense(${e.id})" class="text-gray-200 flex-shrink-0 ml-1"><i class="fas fa-trash"></i></button>
                 </div>
             `).join('');
         }
@@ -904,17 +874,15 @@
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
-                        // Expense images are thumbnails (64×72px), keep small to avoid localStorage quota issues
-                        const maxW = (type === 'expense_temp' || type === 'expense_replace') ? 600 : 2400;
-                        const quality = (type === 'expense_temp' || type === 'expense_replace') ? 0.70 : 0.92;
+                        const maxW = 2400;
+                        const quality = 0.92;
                         canvas.width = Math.min(img.width, maxW);
                         canvas.height = img.height * (canvas.width / img.width);
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                         const b64 = canvas.toDataURL('image/jpeg', quality);
-                        if(type === 'expense_temp') { tempExpImg = b64; document.querySelector('#expensePreview img').src = b64; document.getElementById('expensePreview').classList.remove('hidden'); }
-                        else if(type === 'guide') { const imgs = JSON.parse(localStorage.getItem('customImgs') || '{}'); imgs[key] = b64; localStorage.setItem('customImgs', JSON.stringify(imgs)); renderPlan(); }
+                        if(type === 'guide') { const imgs = JSON.parse(localStorage.getItem('customImgs') || '{}'); imgs[key] = b64; localStorage.setItem('customImgs', JSON.stringify(imgs)); renderPlan(); }
                         else if(type === 'shop') { const imgs = JSON.parse(localStorage.getItem('shopImgs') || '{}'); imgs[key] = b64; localStorage.setItem('shopImgs', JSON.stringify(imgs)); renderSouvenirs(); }
-                        else if(type === 'expense_replace') { const list = JSON.parse(localStorage.getItem('tripExpenses') || '[]'); const idx = list.findIndex(e => String(e.id) === String(key)); if(idx > -1) { list[idx].img = b64; try { localStorage.setItem('tripExpenses', JSON.stringify(list)); } catch(err) { alert('儲存空間不足，無法更新圖片。請刪除部分舊帳目後再試。'); } renderExpenses(); } }
+
                     };
                 };
                 reader.readAsDataURL(file);
